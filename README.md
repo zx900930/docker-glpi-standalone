@@ -136,7 +136,7 @@ services:
 
 #GLPI Container
   glpi:
-    image: zx900930/glpi-standalone
+    image: triatk/glpi-standalone
     container_name : glpi
     hostname: glpi
     ports:
@@ -164,7 +164,7 @@ services:
 
 #GLPI Container
   glpi:
-    image: zx900930/glpi-standalone
+    image: triatk/glpi-standalone
     container_name : glpi
     hostname: glpi
     environment:
@@ -216,7 +216,7 @@ services:
 
   #GLPI Container
   glpi:
-    image: zx900930/glpi-standalone
+    image: triatk/glpi-standalone
     container_name: glpi
     hostname: glpi
     ports:
