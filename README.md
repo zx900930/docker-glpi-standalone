@@ -1,6 +1,5 @@
 # docker-glpi-standalone
 
-
 This fork is intended only to provide method to deploy glpi on air gap network. The official method does not permit to run the docker on air gap network as it try to download within the container the GLPI source.
 
 It also help to fix the permissions issue between the container and the host by defining new UID/GID to www-data user/group so that it match a defined UID/GID on your host.
@@ -12,7 +11,6 @@ In addition, it add support to deploy GLPI in a subfolder.
 # Credits
 
 * [Oringinal repo by DiouxX](https://github.com/DiouxX/docker-glpi)
-
 * [The air-gapped mod by s0p4L1n3](https://github.com/s0p4L1n3/docker-glpi)
 
 # Project to deploy GLPI with docker
@@ -222,7 +220,7 @@ services:
     container_name: glpi
     hostname: glpi
     ports:
-      - 80:80
+      - "80:80"
     volumes:
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
