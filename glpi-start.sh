@@ -1,16 +1,19 @@
 #!/bin/bash
 
 #Controle du choix de version ou prise de la latest
-VERSION_GLPI=10.0.15
+VERSION_GLPI="${VERSION_GLPI:=10.0.15}"
+
+#Version of PHP
+VERSION_PHP="${VERSION_PHP:=8.3}"
 
 if [[ -z "${TIMEZONE}" ]]; then echo "TIMEZONE is unset"; 
 else 
-echo "date.timezone = \"$TIMEZONE\"" > /etc/php/8.3/apache2/conf.d/timezone.ini;
-echo "date.timezone = \"$TIMEZONE\"" > /etc/php/8.3/cli/conf.d/timezone.ini;
+echo "date.timezone = \"$TIMEZONE\"" > /etc/php/$VERSION_PHP/apache2/conf.d/timezone.ini;
+echo "date.timezone = \"$TIMEZONE\"" > /etc/php/$VERSION_PHP/cli/conf.d/timezone.ini;
 fi
 
 #Enable session.cookie_httponly
-sed -i 's,session.cookie_httponly = *\(on\|off\|true\|false\|0\|1\)\?,session.cookie_httponly = on,gi' /etc/php/8.3/apache2/php.ini
+sed -i 's,session.cookie_httponly = *\(on\|off\|true\|false\|0\|1\)\?,session.cookie_httponly = on,gi' /etc/php/$VERSION_PHP/apache2/php.ini
 
 FOLDER_GLPI=glpi/
 FOLDER_WEB=/var/www/html/

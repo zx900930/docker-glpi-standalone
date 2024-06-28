@@ -25,5 +25,7 @@ services:
       - /var/www/html/glpi/:/var/www/html/glpi
     environment:
       - TIMEZONE=Europe/Brussels
-      #- GLPI_ALIAS=glpi  # Optional, uncomment to deploy GLPI in a subfolder
+      #- GLPI_ALIAS=glpi  # Optional, uncomment to deploy GLPI in a subfolder, default to glpi
+      - VERSION_GLPI=10.0.15  # Optional, default to 10.0.15
+      - VERSION_PHP=8.3  # Optional, default to 8.3
     restart: always

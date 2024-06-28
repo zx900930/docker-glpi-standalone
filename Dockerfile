@@ -7,6 +7,9 @@ LABEL org.opencontainers.image.authors="github@diouxx.be"
 #Ne pas poser de question à l'installation
 ENV DEBIAN_FRONTEND noninteractive
 
+#GLPI Verison
+ENV VERSION_GLPI "10.0.15"
+
 #Installation d'apache et de php8.3 avec extension
 RUN apt update \
 && apt install --yes ca-certificates apt-transport-https lsb-release wget curl \
@@ -37,7 +40,7 @@ libsasl2-2 \
 libsasl2-modules \
 libsasl2-modules-db \
 && rm -rf /var/lib/apt/lists/* \
-&& wget -P /var/www/html/ https://github.com/glpi-project/glpi/releases/download/10.0.15/glpi-10.0.15.tgz
+&& wget -P /var/www/html/ https://github.com/glpi-project/glpi/releases/download/${VERSION_GLPI}/glpi-${VERSION_GLPI}.tgz
 
 #Create custom GID for same group owner ID between Host and Container
 RUN groupmod --gid 40000 www-data \
