@@ -7,6 +7,14 @@ It also help to fix the permissions issue between the container and the host by 
 
 I decided to use 40000 as UID/GID as it is not common.
 
+In addition, it add support to deploy GLPI in a subfolder.
+
+# Credits
+
+* [Oringinal repo by DiouxX](https://github.com/DiouxX/docker-glpi)
+
+* [The air-gapped mod by s0p4L1n3](https://github.com/s0p4L1n3/docker-glpi)
+
 # Project to deploy GLPI with docker
 
 [](https://github.com/zx900930/docker-glpi-standalone#project-to-deploy-glpi-with-docker)
