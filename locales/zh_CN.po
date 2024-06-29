@@ -28,7 +28,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-04-22 12:40+0000\n"
-"PO-Revision-Date: 2024-06-29 22:52+0800\n"
+"PO-Revision-Date: 2024-06-29 23:38+0800\n"
 "Last-Translator: aleixcox, 2024\n"
 "Language-Team: Chinese (China) (https://app.transifex.com/glpi/teams/1637/zh_CN/)\n"
 "Language: zh_CN\n"
@@ -14640,12 +14640,12 @@ msgstr "数字格式"
 #: src/Dashboard/Grid.php:1124 src/Dashboard/Grid.php:1153 src/Dashboard/Grid.php:1222
 #, php-format
 msgid "Number of %s"
-msgstr ""
+msgstr "%s 数量"
 
 #: src/Dashboard/Grid.php:1134
 #, php-format
 msgid "Number of %s by type"
-msgstr ""
+msgstr "%s 数量 / 类别"
 
 #: src/NetworkPort.php:1725
 msgid "Number of I/O bytes"
@@ -14871,7 +14871,7 @@ msgstr "工单数量"
 
 #: templates/components/itilobject/actors/field.html.twig
 msgid "Number of tickets already assigned"
-msgstr ""
+msgstr "已分配的工单数量"
 
 #: templates/components/itilobject/actors/field.html.twig src/User.php:3980
 msgid "Number of tickets as requester"
