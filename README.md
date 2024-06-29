@@ -227,7 +227,10 @@ services:
       - /var/www/html/glpi/:/var/www/html/glpi
     environment:
       - TIMEZONE=Europe/Brussels
-      #- GLPI_ALIAS=glpi  # Optional, uncomment to deploy GLPI in a subfolder
+      #- GLPI_ALIAS=glpi  # Optional, uncomment to deploy GLPI in a subfolder, default subdir is /glpi
+      - VERSION_GLPI=10.0.15  # Optional, default to 10.0.15
+      - VERSION_PHP=8.3  # Optional, default to 8.3
+      - INSTALL_PLUGINS=false  # Optional, default to false
     restart: always
 ```
 
@@ -261,3 +264,48 @@ Modify this settings
 environment:
      TIMEZONE=Europe/Brussels
 ```
+
+## GLPI_ALIAS
+
+If you need to deploy GLPI in a subfolder
+
+Modify this variable in the docker compose file
+
+``` yaml
+environment:
+      #- GLPI_ALIAS=glpi  # Optional, uncomment to deploy GLPI in a subfolder, default subdir is /glpi
+```
+
+## INSTALL_PLUGINS
+
+If you need to install plugins from ./plugins folder to GLPI
+
+Modify this variable in the docker compose file
+
+``` yaml
+environment:
+      - INSTALL_PLUGINS=false  # Optional, default to false
+```
+
+## VERSION_GLPI
+
+If you need to deploy a different GLPI version
+
+Modify this variable in the docker compose file
+
+``` yaml
+environment:
+      - VERSION_GLPI=10.0.15  # Optional, default to 10.0.15
+```
+
+## VERSION_PHP
+
+If you need to deploy a different PHP version
+
+Modify this variable in the docker compose file
+
+``` yaml
+environment:
+      - VERSION_PHP=8.3  # Optional, default to 8.3
+```
+      

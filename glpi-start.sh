@@ -6,6 +6,9 @@ VERSION_GLPI="${VERSION_GLPI:=10.0.15}"
 #Version of PHP
 VERSION_PHP="${VERSION_PHP:=8.3}"
 
+#Install plugins
+INSTALL_PLUGINS="${INSTALL_PLUGINS:=false}"
+
 if [[ -z "${TIMEZONE}" ]]; then echo "TIMEZONE is unset"; 
 else 
 echo "date.timezone = \"$TIMEZONE\"" > /etc/php/$VERSION_PHP/apache2/conf.d/timezone.ini;
@@ -39,7 +42,11 @@ else
 fi
 
 #Copy pulgins to the GLPI folder
-cp -a /plugins/. ${FOLDER_WEB}${FOLDER_GLPI}/plugins/
+if [ "$INSTALL_PLUGINS" = true ];
+then
+  echo -e "Install plugins:\n${ls -1 /plugins}"
+  cp -a /plugins/. ${FOLDER_WEB}${FOLDER_GLPI}/plugins/
+fi
 
 #Adapt the Apache server according to the version of GLPI installed
 ## Extract local version installed
