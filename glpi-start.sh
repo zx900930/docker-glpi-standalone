@@ -54,6 +54,9 @@ GLPI_TRANSLATIONS=$(ls -1 /locales)
 echo -e "Update locales:\n$GLPI_TRANSLATIONS"
 cp -a /locales/. ${FOLDER_WEB}${FOLDER_GLPI}/locales/
 
+#Clear cache to make translations avaliable
+rm -rf ${FOLDER_WEB}${FOLDER_GLPI}/files/_cache/*
+
 #Adapt the Apache server according to the version of GLPI installed
 ## Extract local version installed
 LOCAL_GLPI_VERSION=$(ls ${FOLDER_WEB}/${FOLDER_GLPI}/version)

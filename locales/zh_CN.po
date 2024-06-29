@@ -28,7 +28,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-04-22 12:40+0000\n"
-"PO-Revision-Date: 2024-06-29 19:08+0800\n"
+"PO-Revision-Date: 2024-06-29 19:47+0800\n"
 "Last-Translator: aleixcox, 2024\n"
 "Language-Team: Chinese (China) (https://app.transifex.com/glpi/teams/1637/zh_CN/)\n"
 "Language: zh_CN\n"
@@ -11073,11 +11073,11 @@ msgstr "内部调查"
 
 #: src/NotificationTargetTicket.php:635 src/Ticket.php:3133 src/Ticket.php:3305 src/Ticket.php:6378
 msgid "Internal time to own"
-msgstr "内部期间"
+msgstr "内部保留时间"
 
 #: src/Ticket.php:3144
 msgid "Internal time to own + Progress"
-msgstr "内部时间拥有+进度"
+msgstr "内部保留时间+进度"
 
 #: src/Ticket.php:3154
 msgid "Internal time to own exceeded"
@@ -11085,7 +11085,7 @@ msgstr "超过内部保留时间"
 
 #: src/NotificationTargetTicket.php:640 src/Ticket.php:3102 src/Ticket.php:3319 src/Ticket.php:6394
 msgid "Internal time to resolve"
-msgstr "内部保留时长"
+msgstr "内部解决时间"
 
 #: src/Ticket.php:3113
 msgid "Internal time to resolve + Progress"
@@ -20724,7 +20724,7 @@ msgstr "保留+进展时间"
 
 #: src/Ticket.php:3092
 msgid "Time to own exceeded"
-msgstr ""
+msgstr "超过保留时间"
 
 #: templates/components/itilobject/fields_panel.html.twig
 #: templates/components/itilobject/service_levels.html.twig src/LevelAgreement.php:947 src/SlaLevel.php:187
@@ -20742,7 +20742,7 @@ msgstr "解决+进展时间"
 
 #: src/CommonITILObject.php:4103
 msgid "Time to resolve exceeded"
-msgstr ""
+msgstr "超过解决时间"
 
 #: src/User.php:2715 src/User.php:3192
 msgid "Time zone"
