@@ -47,6 +47,11 @@ RUN groupmod --gid 40000 www-data \
 && usermod --uid 40000 --gid 40000 www-data \
 && chown -R www-data:www-data /var/www/html/
 
+#Copy plugins to the Container
+COPY plugins/ /plugins/
+RUN chown -R www-data:www-data /plugins/
+RUN ls -la /plugins/*
+
 #Copie et execution du script pour l'installation et l'initialisation de GLPI
 COPY glpi-start.sh /opt/
 RUN chmod +x /opt/glpi-start.sh

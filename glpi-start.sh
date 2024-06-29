@@ -38,6 +38,9 @@ else
 	chown -R www-data:www-data ${FOLDER_WEB}${FOLDER_GLPI}
 fi
 
+#Copy pulgins to the GLPI folder
+cp -a /plugins/. ${FOLDER_WEB}${FOLDER_GLPI}/plugins/
+
 #Adapt the Apache server according to the version of GLPI installed
 ## Extract local version installed
 LOCAL_GLPI_VERSION=$(ls ${FOLDER_WEB}/${FOLDER_GLPI}/version)
