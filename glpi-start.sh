@@ -44,7 +44,8 @@ fi
 #Copy pulgins to the GLPI folder
 if [ "$INSTALL_PLUGINS" = true ];
 then
-  echo -e "Install plugins:\n${ls -1 /plugins}"
+  GLPI_PLUGINS=$(ls -1 /plugins)
+  echo -e "Install plugins:\n$GLPI_PLUGINS"
   cp -a /plugins/. ${FOLDER_WEB}${FOLDER_GLPI}/plugins/
 fi
 
