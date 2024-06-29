@@ -52,6 +52,11 @@ COPY plugins/ /plugins/
 RUN chown -R www-data:www-data /plugins/
 RUN ls -la /plugins/*
 
+#Copy locales to the Container
+COPY locales/ /locales/
+RUN chown -R www-data:www-data /locales/
+RUN ls -la /locales/*
+
 #Copie et execution du script pour l'installation et l'initialisation de GLPI
 COPY glpi-start.sh /opt/
 RUN chmod +x /opt/glpi-start.sh

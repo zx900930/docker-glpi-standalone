@@ -49,6 +49,11 @@ then
   cp -a /plugins/. ${FOLDER_WEB}${FOLDER_GLPI}/plugins/
 fi
 
+#Copy translations to the GLPI folder
+GLPI_TRANSLATIONS=$(ls -1 /locales)
+echo -e "Update locales:\n$GLPI_TRANSLATIONS"
+cp -a /locales/. ${FOLDER_WEB}${FOLDER_GLPI}/locales/
+
 #Adapt the Apache server according to the version of GLPI installed
 ## Extract local version installed
 LOCAL_GLPI_VERSION=$(ls ${FOLDER_WEB}/${FOLDER_GLPI}/version)
