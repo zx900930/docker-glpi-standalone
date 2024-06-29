@@ -28,7 +28,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-04-22 12:40+0000\n"
-"PO-Revision-Date: 2024-06-29 19:47+0800\n"
+"PO-Revision-Date: 2024-06-29 22:52+0800\n"
 "Last-Translator: aleixcox, 2024\n"
 "Language-Team: Chinese (China) (https://app.transifex.com/glpi/teams/1637/zh_CN/)\n"
 "Language: zh_CN\n"
@@ -1208,7 +1208,7 @@ msgstr "%s 关联一个条目和一份许可"
 #: src/Dashboard/Grid.php:1190
 #, php-format
 msgid "%s by %s"
-msgstr "%s（按 %s 分类）"
+msgstr "%s - %s"
 
 #. TRANS: %s is the user login
 #: front/computer_item.form.php:72
@@ -5626,7 +5626,7 @@ msgstr "色彩"
 #: src/Console/Migration/UnsignedKeysCommand.php:160
 #, php-format
 msgid "Column \"%s.%s\" contains negative values. Updating them to \"%s\"..."
-msgstr ""
+msgstr "\"%s.%s\" 列包含负数。更改为 \"%s\"..."
 
 #: src/Console/AbstractCommand.php:271
 msgid "Command execution may take a long time and should not be interrupted."
@@ -6259,7 +6259,7 @@ msgstr "创建循环工单和变更"
 
 #: js/modules/Kanban/Kanban.js:1955 js/modules/Kanban/Kanban.js:1974 js/modules/Kanban/Kanban.js:1994
 msgid "Create status"
-msgstr ""
+msgstr "添加新状态"
 
 #: src/Entity.php:1370 ajax/ticketsatisfaction.php:61
 msgid "Create survey after"
@@ -8960,12 +8960,12 @@ msgstr "外部日历"
 #: src/PlanningExternalEvent.php:56
 msgid "External event"
 msgid_plural "External events"
-msgstr[0] ""
+msgstr[0] "外部事件"
 
 #: src/PlanningExternalEventTemplate.php:55
 msgid "External events template"
 msgid_plural "External events templates"
-msgstr[0] ""
+msgstr[0] "外部事件模板"
 
 #: src/Link.php:55 src/Link.php:733 src/Profile.php:2610
 msgid "External link"
@@ -9402,7 +9402,7 @@ msgstr "修复检测到的问题"
 #: src/Console/Database/AbstractConfigureCommand.php:469
 #, php-format
 msgid "Fix them and run the \"%1$s\" command to enable timezones."
-msgstr ""
+msgstr "运行 \"%1$s\" 命令以启用时区功能."
 
 #: src/CommonITILCost.php:167 src/CommonITILCost.php:272 src/CommonITILCost.php:475
 #: src/CommonITILCost.php:611 src/NotificationTargetCommonITILObject.php:1855
@@ -11403,14 +11403,14 @@ msgstr "使用 #0 字符串 可以影响正则表达式的结果"
 #: install/update.php:163 src/Console/Database/UpdateCommand.php:247
 #, php-format
 msgid "It is recommended to run the \"%s\" command to see the differences."
-msgstr ""
+msgstr "推荐执行 \"%s\" 命令来查看变化的内容。"
 
 #: src/Console/Database/UpdateCommand.php:229
 #, php-format
 msgid ""
 "It is recommended to run the \"%s\" command to validate that the database schema is consistent with the "
 "current GLPI version."
-msgstr ""
+msgstr "推荐执行 \"%s\" 命令来确认数据库表结构是否兼容目前的GLPI版本。"
 
 #: src/FieldUnicity.php:503
 msgid "It's mandatory to select a type and at least one field"
@@ -15218,7 +15218,7 @@ msgstr ""
 
 #: js/modules/Kanban/Kanban.js:1954
 msgid "Or add a new status"
-msgstr ""
+msgstr "或者添加新状态"
 
 #: src/CommonItilObject_Item.php:144
 msgid "Or complete search"
@@ -16531,7 +16531,7 @@ msgstr[0] "问题"
 #: src/Item_Problem.php:53
 msgid "Problem item"
 msgid_plural "Problem items"
-msgstr[0] ""
+msgstr[0] "问题记录"
 
 #: src/NotificationTargetProblem.php:51
 msgid "Problem solved"
@@ -16583,7 +16583,7 @@ msgstr "处理中"
 #: src/NotificationTargetCommonITILObject.php:1998 src/NotificationTargetCommonITILObject.php:2017
 #, php-format
 msgid "Processing %1$s"
-msgstr ""
+msgstr "正在处理 %1$s"
 
 #: src/Dashboard/Provider.php:1255 src/Problem.php:669 src/Ticket.php:3808
 msgctxt "status"
@@ -16851,7 +16851,7 @@ msgstr[0] "订阅RSS"
 #, php-format
 msgctxt "glpi_status"
 msgid "RUNNING: %d, STUCK: %d, TOTAL: %d"
-msgstr ""
+msgstr "运行中: %d, 挂起: %d, 总数: %d"
 
 #. TRANS: Test of comment for translation (mark : //TRANS)
 #: src/Rack.php:65 src/Rack.php:90
@@ -17426,7 +17426,7 @@ msgstr ""
 #: src/Plugin.php:2405
 msgctxt "plugin"
 msgid "Replaced"
-msgstr ""
+msgstr "已覆盖"
 
 #: src/RuleDictionnarySoftwareCollection.php:94
 msgid "Replay dictionary rules for manufacturers (----- = All)"
@@ -17481,7 +17481,7 @@ msgstr "复制 %s"
 #: src/System/Status/StatusChecker.php:198 src/System/Status/StatusChecker.php:206
 msgctxt "glpi_status"
 msgid "Replication delay is too high"
-msgstr ""
+msgstr "副本同步延迟过高"
 
 #: src/NotificationMailingSetting.php:113 src/Entity.php:960 src/Entity.php:2069
 msgid "Reply-To address"
@@ -17727,13 +17727,13 @@ msgstr "决议"
 msgctxt "camera"
 msgid "Resolution"
 msgid_plural "Resolutions"
-msgstr[0] ""
+msgstr[0] "分辨率"
 
 #: src/ImageResolution.php:42
 msgctxt "image"
 msgid "Resolution"
 msgid_plural "Resolutions"
-msgstr[0] ""
+msgstr[0] "分辨率"
 
 #: templates/components/itilobject/fields_panel.html.twig
 #: src/ContentTemplates/Parameters/CommonITILObjectParameters.php:68 src/CommonITILObject.php:4113
@@ -17827,7 +17827,7 @@ msgstr ""
 
 #: templates/pages/admin/inventory/upload_result.html.twig
 msgid "Result"
-msgstr ""
+msgstr "结果"
 
 #: src/Rule.php:2213 src/RuleCollection.php:1929
 msgid "Result details"
@@ -19678,7 +19678,7 @@ msgstr "系统锁定"
 
 #: src/Profile.php:969 src/Profile.php:3054
 msgid "System logs"
-msgstr ""
+msgstr "系统日志"
 
 #: src/CronTask.php:2083
 msgid "System logs retention period (in days, 0 for infinite)"
@@ -19765,7 +19765,7 @@ msgstr "考虑到的时间"
 
 #: templates/maintenance.html.twig
 msgid "Take me home"
-msgstr ""
+msgstr "返回首页"
 
 #: src/KnowbaseItem.php:265 src/KnowbaseItem.php:1086 src/Console/Database/UpdateCommand.php:164
 #: src/Reminder.php:564 src/RSSFeed.php:556 src/DomainRecord.php:612
@@ -20071,7 +20071,7 @@ msgstr "此 \"%s\" 依赖已安装好了"
 #: src/Html.php:3890
 #, php-format
 msgid "The %s field is mandatory"
-msgstr ""
+msgstr "%s 是必填项"
 
 #: src/Auth.php:1670
 msgid "The CAS lib isn't available, GLPI doesn't package it anymore for license compatibility issue."
@@ -20153,7 +20153,7 @@ msgstr ""
 #: src/Project.php:2532 src/CommonITILObject.php:9479
 msgctxt "filters"
 msgid "The content of the item"
-msgstr ""
+msgstr "内容"
 
 #: src/Console/Database/UpdateCommand.php:227
 msgid "The database schema integrity check has been skipped."
@@ -20315,7 +20315,7 @@ msgstr "调整大小的事件是一个重复事件。是否要更改序列或实
 
 #: src/Console/Marketplace/SearchCommand.php:56
 msgid "The search term"
-msgstr ""
+msgstr "关键词"
 
 #: src/CommonITILValidation.php:358
 #, php-format
@@ -20336,7 +20336,7 @@ msgstr ""
 #: src/Project.php:2520 src/CommonITILObject.php:9467
 msgctxt "filters"
 msgid "The title of the item"
-msgstr ""
+msgstr "标题"
 
 #: front/updatepassword.php:82
 msgid "The two passwords do not match"
@@ -20345,7 +20345,7 @@ msgstr "两个密码不匹配"
 #: src/Project.php:2524 src/CommonITILObject.php:9471
 msgctxt "filters"
 msgid "The type of the item"
-msgstr ""
+msgstr "类型"
 
 #: src/UploadHandler.php:371
 msgid "The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form"
@@ -20581,7 +20581,7 @@ msgstr "登录后创建工单"
 #: src/Item_Ticket.php:55
 msgid "Ticket item"
 msgid_plural "Ticket items"
-msgstr[0] ""
+msgstr[0] "工单"
 
 #: src/RuleTicket.php:627
 msgid "Ticket location"
@@ -20622,15 +20622,15 @@ msgstr "工单"
 
 #: src/Ticket_Contract.php:48
 msgid "Tickets / Contracts"
-msgstr ""
+msgstr "工单/合同"
 
 #: src/Dashboard/Provider.php:601
 msgid "Tickets by SLA status and by technician"
-msgstr ""
+msgstr "工单按SLA和技术人员"
 
 #: src/Dashboard/Provider.php:745
 msgid "Tickets by SLA status and by technician group"
-msgstr ""
+msgstr "工单按SLA和技术人员组"
 
 #: src/Entity.php:2846
 msgid "Tickets configuration"
@@ -20654,7 +20654,7 @@ msgstr "按月份筛选工单状态"
 
 #: src/Dashboard/Grid.php:1291
 msgid "Tickets summary"
-msgstr ""
+msgstr "工单总结"
 
 #: src/Dashboard/Grid.php:1282
 msgid "Tickets times (in hours)"
@@ -22578,11 +22578,11 @@ msgstr "查看 TODO 列表"
 
 #: templates/components/search/display_data.html.twig
 msgid "View all"
-msgstr ""
+msgstr "查看所有"
 
 #: src/Reservation.php:547
 msgid "View all items"
-msgstr ""
+msgstr "查看所有项"
 
 #: src/Item_Rack.php:168 src/Rack.php:391 src/Impact.php:759
 msgid "View as list"
@@ -22598,7 +22598,7 @@ msgstr "图表视图"
 
 #: templates/components/itilobject/footer.html.twig
 msgid "View other actions"
-msgstr ""
+msgstr "查看其它可执行的操作"
 
 #: src/Planning.php:1410
 msgid "View this item in its context"
@@ -22773,7 +22773,7 @@ msgstr "保修信息"
 
 #: src/Inventory/Asset/Cartridge.php:59
 msgid "Waste bin"
-msgstr ""
+msgstr "回收站"
 
 #: templates/components/itilobject/selfservice.html.twig src/Log.php:565 src/Group.php:268 src/Group.php:495
 #: src/ContentTemplates/Parameters/CommonITILObjectParameters.php:77 src/CommonITILObject.php:3840
@@ -23505,7 +23505,7 @@ msgstr "你的密码已被成功更新。"
 
 #: src/User.php:6447
 msgid "Your password has expired."
-msgstr ""
+msgstr "你的密码已过期。"
 
 #: src/User.php:5458
 msgid "Your password has expired. You must change it to be able to login."
@@ -23534,7 +23534,7 @@ msgstr "您的问题正在处理"
 
 #: src/Session.php:1617
 msgid "Your session has expired."
-msgstr ""
+msgstr "你的登录状态已过期。"
 
 #: front/tracking.injector.php:94
 msgid "Your ticket has been registered, its treatment is in progress."
