@@ -28,7 +28,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-04-22 12:40+0000\n"
-"PO-Revision-Date: 2024-06-30 09:14+0800\n"
+"PO-Revision-Date: 2024-06-30 11:32+0800\n"
 "Last-Translator: aleixcox, 2024\n"
 "Language-Team: Chinese (China) (https://app.transifex.com/glpi/teams/1637/zh_CN/)\n"
 "Language: zh_CN\n"
@@ -20061,12 +20061,12 @@ msgstr "这将删除所有进程中的预订。"
 #: src/Config.php:1848
 #, php-format
 msgid "The \"%s\" cache extension is installed"
-msgstr "此 \"%s\" cache 缓存扩展依赖已安装"
+msgstr "\"%s\" 缓存插件已安装"
 
 #: src/Config.php:1768
 #, php-format
 msgid "The \"%s\" extension is installed"
-msgstr "此 \"%s\" 依赖已安装好了"
+msgstr "\"%s\" 已安装"
 
 #: src/Html.php:3890
 #, php-format
