@@ -9,6 +9,11 @@ VERSION_PHP="${VERSION_PHP:=8.3}"
 #Install plugins
 INSTALL_PLUGINS="${INSTALL_PLUGINS:=false}"
 
+#Zend OPcache settings
+OPCACHE_SIZE="${OPCACHE_SIZE:=128}"
+OPCACHE_BUFFER="${OPCACHE_BUFFER:=5}"
+OPCACHE_WASTED_PERCENTAGE="${OPCACHE_WASTED_PERCENTAGE:=5}"
+
 if [[ -z "${TIMEZONE}" ]]; then echo "TIMEZONE is unset"; 
 else 
 echo "date.timezone = \"$TIMEZONE\"" > /etc/php/$VERSION_PHP/apache2/conf.d/timezone.ini;
@@ -17,6 +22,11 @@ fi
 
 #Enable session.cookie_httponly
 sed -i 's,session.cookie_httponly = *\(on\|off\|true\|false\|0\|1\)\?,session.cookie_httponly = on,gi' /etc/php/$VERSION_PHP/apache2/php.ini
+
+#Optimize Zend OPcache settings
+sed -i "/opcache.memory_consumption/c opcache.memory_consumption=$OPCACHE_SIZE" /etc/php/$VERSION_PHP/cli/php.ini
+sed -i "/opcache.interned_strings_buffer/c opcache.interned_strings_buffer=$OPCACHE_BUFFER" /etc/php/$VERSION_PHP/cli/php.ini
+sed -i "/opcache.max_wasted_percentage/c opcache.max_wasted_percentage=$OPCACHE_WASTED_PERCENTAGE" /etc/php/$VERSION_PHP/cli/php.ini
 
 FOLDER_GLPI=glpi/
 FOLDER_WEB=/var/www/html/

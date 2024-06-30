@@ -28,7 +28,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-04-22 12:40+0000\n"
-"PO-Revision-Date: 2024-06-29 23:38+0800\n"
+"PO-Revision-Date: 2024-06-30 09:14+0800\n"
 "Last-Translator: aleixcox, 2024\n"
 "Language-Team: Chinese (China) (https://app.transifex.com/glpi/teams/1637/zh_CN/)\n"
 "Language: zh_CN\n"
@@ -41,7 +41,7 @@ msgstr ""
 #: src/Config.php:1850 src/Config.php:1872
 #, php-format
 msgid "\"%s\" cache system is used"
-msgstr "“%s” 使用缓存系统"
+msgstr "使用 “%s” 作为缓存系统"
 
 #: src/Console/Plugin/InstallCommand.php:70
 msgid "\"-p foo\" will set \"foo\" param value to true"
@@ -57,7 +57,7 @@ msgstr "“迁移清理” 工具"
 
 #: src/Agent.php:503
 msgid "\"deviceid\" is mandatory!"
-msgstr "\"deviceid\" 是强制性的!"
+msgstr "\"deviceid\" 是必填的!"
 
 #: src/System/Requirement/DbConfiguration.php:84
 msgid "\"innodb_large_prefix\" must be enabled."
@@ -1219,7 +1219,7 @@ msgstr "%s 关联到项目"
 #: src/CommonITILRecurrent.php:622
 #, php-format
 msgid "%s creation failed (check mandatory fields)"
-msgstr "%s 创建失败，请检查mandatory字段"
+msgstr "%s 创建失败，请检查必填字段"
 
 #: src/CommonITILRecurrent.php:628
 #, php-format
@@ -9151,7 +9151,7 @@ msgstr[0] "字段"
 
 #: src/Notification.php:717 src/Notification.php:730
 msgid "Field itemtype is mandatory"
-msgstr "字段项类型是必需的"
+msgstr "字段项类型是必填的"
 
 #: src/Lockedfield.php:79
 msgid "Field name"
@@ -10133,7 +10133,7 @@ msgstr "历史"
 
 #: src/Config.php:1798
 msgid "Hits rate"
-msgstr "点击率"
+msgstr "缓存命中率"
 
 #: templates/layout/parts/page_header_empty.html.twig templates/layout/parts/page_header.html.twig
 #: templates/layout/parts/breadcrumbs.html.twig front/helpdesk.public.php:103 src/Html.php:1555
@@ -10575,7 +10575,7 @@ msgstr "从其他来源导入"
 
 #: src/RuleMatchedLog.php:97 src/RuleMatchedLog.php:103 src/RuleMatchedLog.php:108 src/RuleMatchedLog.php:126
 msgid "Import information"
-msgstr ""
+msgstr "导入信息"
 
 #: templates/pages/admin/inventory/upload_form.html.twig
 msgid "Import inventory files"
@@ -10876,7 +10876,7 @@ msgstr "无限"
 #: js/glpi_dialog.js:387 js/misc.js:45
 msgid "Information"
 msgid_plural "Informations"
-msgstr[0] ""
+msgstr[0] "信息"
 
 #: src/Config.php:1905
 msgid "Information about system installation and configuration"
@@ -11303,7 +11303,7 @@ msgstr "资产检查频率（小时）"
 
 #: templates/components/form/inventory_info.html.twig src/Features/Inventoriable.php:115
 msgid "Inventory information"
-msgstr ""
+msgstr "仓库信息"
 
 #: src/RefusedEquipment.php:263
 msgid "Inventory is still refused."
@@ -11991,7 +11991,7 @@ msgstr "最后更新于%s"
 #: templates/components/itilobject/timeline/timeline_item_header_badges.html.twig
 #, php-format
 msgid "Last update: %1$s by %2$s"
-msgstr ""
+msgstr "最近更新: %1$s - %2$s"
 
 #: src/Marketplace/View.php:399
 msgid "Last updated"
@@ -13242,7 +13242,7 @@ msgstr ""
 
 #: src/Ticket.php:2964
 msgid "Missing mandatory field in input"
-msgstr ""
+msgstr "缺少必填字段"
 
 #: src/IPNetwork.php:332
 msgid "Missing network property (In CIDR notation. Ex: 192.168.1.1/24)"
@@ -14927,7 +14927,7 @@ msgstr "提交的工单数量"
 #: src/Console/System/CheckRequirementsCommand.php:78 src/Printer_CartridgeInfo.php:97 js/glpi_dialog.js:79
 #: js/glpi_dialog.js:264
 msgid "OK"
-msgstr "OK"
+msgstr "确认"
 
 #: install/install.php:322 install/install.php:349 install/install.php:378
 msgid "OK - database was initialized"
@@ -16397,11 +16397,11 @@ msgstr "电源装置"
 
 #: src/Config.php:1388
 msgid "Pre-select me as a requester when creating a ticket"
-msgstr "在创建工单时重新选择本人作为请求者"
+msgstr "创建工单时选择本人作为请求者"
 
 #: src/Config.php:1381
 msgid "Pre-select me as a technician when creating a ticket"
-msgstr "创建工单时，预先选择本人作为技术人员"
+msgstr "创建工单时选择本人作为处理工单人员"
 
 #: src/Config.php:1411
 msgid "Precise"
@@ -19198,7 +19198,7 @@ msgstr ""
 
 #: src/Console/Application.php:528
 msgid "Some mandatory system requirements are missing."
-msgstr ""
+msgstr "部分必要系统需求不满足。"
 
 #: src/Console/AbstractCommand.php:208
 msgid "Some optional system requirements are missing."
@@ -19864,7 +19864,7 @@ msgstr[0] "团队成员"
 #: src/Dashboard/Filters/UserTechFilter.php:48 src/CommonITILObject.php:4538 src/RuleTicket.php:639
 #: src/RuleTicket.php:831
 msgid "Technician"
-msgstr "工程师"
+msgstr "技术员"
 
 #: front/stat.tracking.php:129
 msgid "Technician as assigned"

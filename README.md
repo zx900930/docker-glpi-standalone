@@ -231,6 +231,9 @@ services:
       - VERSION_GLPI=10.0.15  # Optional, default to 10.0.15
       - VERSION_PHP=8.3  # Optional, default to 8.3
       - INSTALL_PLUGINS=false  # Optional, default to false
+      - OPCACHE_SIZE=128  # Optional, default to 128
+      - OPCACHE_BUFFER=5  # Optional, default to 5
+      - OPCACHE_WASTED_PERCENTAGE=5  # Optional, default to 5
     restart: always
 ```
 
