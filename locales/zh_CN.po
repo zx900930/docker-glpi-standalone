@@ -28,7 +28,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-04-22 12:40+0000\n"
-"PO-Revision-Date: 2024-06-30 18:15+0800\n"
+"PO-Revision-Date: 2024-06-30 18:24+0800\n"
 "Last-Translator: aleixcox, 2024\n"
 "Language-Team: Chinese (China) (https://app.transifex.com/glpi/teams/1637/zh_CN/)\n"
 "Language: zh_CN\n"
@@ -21451,7 +21451,7 @@ msgstr "无法获取授权码"
 
 #: src/CommonGLPI.php:1500
 msgid "Unable to get item"
-msgstr "不能获得条目"
+msgstr "没有访问权限"
 
 #: front/user.form.php:202
 msgid "Unable to impersonate user"
