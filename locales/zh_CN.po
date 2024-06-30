@@ -28,7 +28,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-04-22 12:40+0000\n"
-"PO-Revision-Date: 2024-06-30 23:25+0800\n"
+"PO-Revision-Date: 2024-06-30 23:51+0800\n"
 "Last-Translator: aleixcox, 2024\n"
 "Language-Team: Chinese (China) (https://app.transifex.com/glpi/teams/1637/zh_CN/)\n"
 "Language: zh_CN\n"
@@ -2952,7 +2952,7 @@ msgstr "管理号码"
 #: src/User.php:3882 src/Auth.php:1750
 msgctxt "user"
 msgid "Administrative number"
-msgstr "管理号码"
+msgstr "员工工号"
 
 #: src/NotificationTargetDBConnection.php:49 src/Marketplace/NotificationTargetController.php:56
 #: src/NotificationTarget.php:1046
@@ -17764,7 +17764,7 @@ msgstr "满意度调查响应日期"
 #: src/AuthLDAP.php:995 src/AuthLDAP.php:1336 src/User.php:2950 src/User.php:4036
 #: src/ContentTemplates/Parameters/UserParameters.php:83
 msgid "Responsible"
-msgstr "回应"
+msgstr "负责人"
 
 #: src/RuleTicket.php:961
 msgid "Responsible of the requester"
