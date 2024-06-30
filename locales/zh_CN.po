@@ -28,7 +28,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-04-22 12:40+0000\n"
-"PO-Revision-Date: 2024-06-30 17:37+0800\n"
+"PO-Revision-Date: 2024-06-30 18:15+0800\n"
 "Last-Translator: aleixcox, 2024\n"
 "Language-Team: Chinese (China) (https://app.transifex.com/glpi/teams/1637/zh_CN/)\n"
 "Language: zh_CN\n"
@@ -20822,7 +20822,7 @@ msgstr "小技巧：您可以使用 %s 组合键调用此功能"
 #: src/Reminder.php:402 src/Reminder.php:644 src/NotificationTargetProject.php:733
 #: src/NotificationTargetProject.php:738 src/NotificationTargetProject.php:743
 msgid "Title"
-msgstr "岗位"
+msgstr "标题"
 
 #: templates/components/user/info_card.html.twig front/stat.tracking.php:106 front/stat.graph.php:260
 #: src/AuthLDAP.php:977 src/AuthLDAP.php:1185 src/AuthLDAP.php:4031 src/User.php:2857 src/Auth.php:1799
@@ -20830,7 +20830,7 @@ msgstr "岗位"
 #: src/NotificationTargetCommonITILObject.php:1834
 msgctxt "person"
 msgid "Title"
-msgstr "标题"
+msgstr "岗位"
 
 #: src/CommonITILObject.php:6602
 #, php-format
@@ -20969,11 +20969,11 @@ msgstr "目录"
 
 #: src/Dashboard/Grid.php:1340
 msgid "Top ticket's assignee groups"
-msgstr "工单受让人群组TOP榜"
+msgstr "工单处理群组TOP榜"
 
 #: src/Dashboard/Grid.php:1339
 msgid "Top ticket's assignees"
-msgstr "工单受让人TOP榜"
+msgstr "工单处理人TOP榜"
 
 #: src/Dashboard/Grid.php:1317
 msgid "Top ticket's categories"
