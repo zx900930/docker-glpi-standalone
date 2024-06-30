@@ -28,7 +28,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-04-22 12:40+0000\n"
-"PO-Revision-Date: 2024-06-30 18:24+0800\n"
+"PO-Revision-Date: 2024-06-30 23:25+0800\n"
 "Last-Translator: aleixcox, 2024\n"
 "Language-Team: Chinese (China) (https://app.transifex.com/glpi/teams/1637/zh_CN/)\n"
 "Language: zh_CN\n"
@@ -3802,7 +3802,7 @@ msgstr "关联群组"
 
 #: src/User.php:3532
 msgid "Associate to a profile"
-msgstr "关联到档案"
+msgstr "关联配置文件"
 
 #: src/CommonDBTM.php:4117
 msgctxt "button"
@@ -7654,7 +7654,7 @@ msgstr "取消群组"
 
 #: src/User.php:3534
 msgid "Dissociate from a profile"
-msgstr "文件分离"
+msgstr "取消配置文件"
 
 #: src/Item_Devices.php:868
 msgid "Dissociated devices"
