@@ -3,3 +3,4 @@ cust-entry.sh
 data
 start-docker.sh
 trunk.yaml
+.trunk
