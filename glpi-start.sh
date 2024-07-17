@@ -51,6 +51,8 @@ then
   echo "GLPI file backup finished"
   rm -rf ${FOLDER_WEB}${FOLDER_GLPI}*
   echo "Old GLPI removed"
+  TAR_GLPI=glpi-${VERSION_GLPI}.tgz
+  cp ${FOLDER_BACKUP}/${TAR_GLPI} ${FOLDER_WEB}${TAR_GLPI}
 fi
 
 #Téléchargement et extraction des sources de GLPI
@@ -58,12 +60,11 @@ if [ "$(ls ${FOLDER_WEB}${FOLDER_GLPI}config)" ];
 then
 	echo "GLPI is already installed"
  	TAR_GLPI=glpi-${VERSION_GLPI}.tgz
-  	rm -Rf ${FOLDER_WEB}${TAR_GLPI}
+  rm -Rf ${FOLDER_WEB}${TAR_GLPI}
 else
   echo "Upgrading GLPI files to \"$VERSION_GLPI\""
 	TAR_GLPI=glpi-${VERSION_GLPI}.tgz
 	tar -xzf ${FOLDER_WEB}${TAR_GLPI} -C ${FOLDER_WEB}
-	rm -Rf ${FOLDER_WEB}${TAR_GLPI}
   if [ "$GLPI_UPGRADE_MIGRATION" = true ];
   then
     echo "Restore backuped GLPI data"
@@ -71,7 +72,9 @@ else
     cp -Rf ${FOLDER_BACKUP}/plugins ${FOLDER_WEB}${FOLDER_GLPI}
     cp -Rf ${FOLDER_BACKUP}/config ${FOLDER_WEB}${FOLDER_GLPI}
     cp -Rf ${FOLDER_BACKUP}/marketplace ${FOLDER_WEB}${FOLDER_GLPI}
+    cp ${FOLDER_WEB}${TAR_GLPI} ${FOLDER_BACKUP}/${TAR_GLPI}
   fi
+  rm -Rf ${FOLDER_WEB}${TAR_GLPI}
 	chown -R www-data:www-data ${FOLDER_WEB}${FOLDER_GLPI}
 fi
 
