@@ -225,6 +225,8 @@ services:
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
       - /var/www/html/glpi/:/var/www/html/glpi
+      #- /opt/glpi/plugins/:/plugins # you can install your own plugins by mount the plugins directory and modify the env INSTALL_PLUGINS to true.
+      #- /opt/glpi/backup_glpi/:/backup_glpi # you can persist the backup data by mounting a backup folder.
     environment:
       - TIMEZONE=Europe/Brussels
       #- GLPI_ALIAS=glpi  # Optional, uncomment to deploy GLPI in a subfolder, default subdir is /glpi
