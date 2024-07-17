@@ -19,8 +19,8 @@ GLPI_UPGRADE_MIGRATION="${GLPI_UPGRADE_MIGRATION:=false}"
 
 if [[ -z "${TIMEZONE}" ]]; then echo "TIMEZONE is unset"; 
 else 
-echo "date.timezone = \"$TIMEZONE\"" > /etc/php/$VERSION_PHP/apache2/conf.d/timezone.ini;
-echo "date.timezone = \"$TIMEZONE\"" > /etc/php/$VERSION_PHP/cli/conf.d/timezone.ini;
+  echo "date.timezone = \"$TIMEZONE\"" > /etc/php/$VERSION_PHP/apache2/conf.d/timezone.ini;
+  echo "date.timezone = \"$TIMEZONE\"" > /etc/php/$VERSION_PHP/cli/conf.d/timezone.ini;
 fi
 
 #Enable session.cookie_httponly
@@ -39,7 +39,7 @@ FOLDER_BACKUP=/backup_glpi
 if !(grep -q "TLS_REQCERT" /etc/ldap/ldap.conf)
 then
 	echo "TLS_REQCERT isn't present"
-    echo -e "TLS_REQCERT\tnever" >> /etc/ldap/ldap.conf
+  echo -e "TLS_REQCERT\tnever" >> /etc/ldap/ldap.conf
 fi
 
 #check if need to upgrade glpi
@@ -52,7 +52,7 @@ then
   rm -rf ${FOLDER_WEB}${FOLDER_GLPI}*
   echo "Old GLPI removed"
   TAR_GLPI=glpi-${VERSION_GLPI}.tgz
-  cp ${FOLDER_BACKUP}/${TAR_GLPI} ${FOLDER_WEB}${TAR_GLPI}
+  cp ${FOLDER_WEB}${TAR_GLPI} ${FOLDER_BACKUP}/${TAR_GLPI}
 fi
 
 #Téléchargement et extraction des sources de GLPI
@@ -72,7 +72,7 @@ else
     cp -Rf ${FOLDER_BACKUP}/plugins ${FOLDER_WEB}${FOLDER_GLPI}
     cp -Rf ${FOLDER_BACKUP}/config ${FOLDER_WEB}${FOLDER_GLPI}
     cp -Rf ${FOLDER_BACKUP}/marketplace ${FOLDER_WEB}${FOLDER_GLPI}
-    cp ${FOLDER_WEB}${TAR_GLPI} ${FOLDER_BACKUP}/${TAR_GLPI}
+    cp ${FOLDER_BACKUP}/${TAR_GLPI} ${FOLDER_WEB}${TAR_GLPI}
   fi
   rm -Rf ${FOLDER_WEB}${TAR_GLPI}
 	chown -R www-data:www-data ${FOLDER_WEB}${FOLDER_GLPI}
