@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #Controle du choix de version ou prise de la latest
-VERSION_GLPI="${VERSION_GLPI:=10.0.15}"
+VERSION_GLPI="${VERSION_GLPI:=10.0.16}"
 
 #Version of PHP
 VERSION_PHP="${VERSION_PHP:=8.3}"
@@ -13,6 +13,9 @@ INSTALL_PLUGINS="${INSTALL_PLUGINS:=false}"
 OPCACHE_SIZE="${OPCACHE_SIZE:=128}"
 OPCACHE_BUFFER="${OPCACHE_BUFFER:=8}"
 OPCACHE_WASTED_PERCENTAGE="${OPCACHE_WASTED_PERCENTAGE:=5}"
+
+#GLPI upgrade migration
+GLPI_UPGRADE_MIGRATION="${GLPI_UPGRADE_MIGRATION:=false}"
 
 if [[ -z "${TIMEZONE}" ]]; then echo "TIMEZONE is unset"; 
 else 
@@ -30,12 +33,24 @@ sed -i "/opcache.max_wasted_percentage/c opcache.max_wasted_percentage=$OPCACHE_
 
 FOLDER_GLPI=glpi/
 FOLDER_WEB=/var/www/html/
+FOLDER_BACKUP=/backup_glpi
 
 #check if TLS_REQCERT is present
 if !(grep -q "TLS_REQCERT" /etc/ldap/ldap.conf)
 then
 	echo "TLS_REQCERT isn't present"
     echo -e "TLS_REQCERT\tnever" >> /etc/ldap/ldap.conf
+fi
+
+#check if need to upgrade glpi
+if [ "$GLPI_UPGRADE_MIGRATION" = true];
+then
+  php ${FOLDER_WEB}${FOLDER_GLPI}bin/console glpi:maintenance:enable
+  echo "Upgrading GLPI to \"$VERSION_GLPI\""
+  cp -Rf ${FOLDER_WEB}${FOLDER_GLPI} ${FOLDER_BACKUP}
+  echo "Backup GLPI finished"
+  rm -rf ${FOLDER_WEB}${FOLDER_GLPI}
+  echo "Old GLPI removed"
 fi
 
 #Téléchargement et extraction des sources de GLPI
@@ -48,11 +63,19 @@ else
 	TAR_GLPI=glpi-${VERSION_GLPI}.tgz
 	tar -xzf ${FOLDER_WEB}${TAR_GLPI} -C ${FOLDER_WEB}
 	rm -Rf ${FOLDER_WEB}${TAR_GLPI}
+  if [ "$GLPI_UPGRADE_MIGRATION" = true];
+  then
+    echo "Restore GLPI data"
+    cp -Rf ${FOLDER_BACKUP}/files ${FOLDER_WEB}${FOLDER_GLPI}
+    cp -Rf ${FOLDER_BACKUP}/plugins ${FOLDER_WEB}${FOLDER_GLPI}
+    cp -Rf ${FOLDER_BACKUP}/config ${FOLDER_WEB}${FOLDER_GLPI}
+    cp -Rf ${FOLDER_BACKUP}/marketplace ${FOLDER_WEB}${FOLDER_GLPI}
+  fi
 	chown -R www-data:www-data ${FOLDER_WEB}${FOLDER_GLPI}
 fi
 
 #Copy pulgins to the GLPI folder
-if [ "$INSTALL_PLUGINS" = true ];
+if [ "$INSTALL_PLUGINS" = true ] && [ "$GLPI_UPGRADE_MIGRATION" = false ];
 then
   GLPI_PLUGINS=$(ls -1 /plugins)
   echo -e "Install plugins:\n$GLPI_PLUGINS"
@@ -99,6 +122,15 @@ else
      set +H
      echo -e "\nAlias \"/$GLPI_ALIAS\" \"/var/www/html/glpi/public\"\n\n<Directory /var/www/html/glpi>\n\tRequire all granted\n\tRewriteEngine On\n\tRewriteCond %{REQUEST_FILENAME} !-f\n\n\tRewriteRule ^(.*)$ index.php [QSA,L]\n</Directory>\n\nErrorLog /var/log/apache2/error-glpi.log\nLogLevel warn\nCustomLog /var/log/apache2/access-glpi.log combined\n" > /etc/apache2/sites-available/000-default.conf
    fi
+fi
+
+#migration glpi database
+if [ "$GLPI_UPGRADE_MIGRATION" = true];
+then
+  echo "Migration GLPI database to \"$VERSION_GLPI\" ..."
+  yes yes | php ${FOLDER_WEB}${FOLDER_GLPI}bin/console db:update
+  php ${FOLDER_WEB}${FOLDER_GLPI}bin/console glpi:maintenance:disable
+  echo "Migration GLPI database to \"$VERSION_GLPI\" complete!"
 fi
 
 #Add scheduled task by cron and enable

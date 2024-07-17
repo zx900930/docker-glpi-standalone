@@ -8,7 +8,7 @@ LABEL org.opencontainers.image.authors="github@diouxx.be"
 ENV DEBIAN_FRONTEND noninteractive
 
 #GLPI Verison
-ENV VERSION_GLPI "10.0.15"
+ENV VERSION_GLPI "10.0.16"
 
 #Installation d'apache et de php8.3 avec extension
 RUN apt update \
