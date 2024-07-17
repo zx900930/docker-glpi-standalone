@@ -48,7 +48,7 @@ then
   php ${FOLDER_WEB}${FOLDER_GLPI}bin/console glpi:maintenance:enable
   echo "Upgrading GLPI to \"$VERSION_GLPI\""
   cp -Rf ${FOLDER_WEB}${FOLDER_GLPI} ${FOLDER_BACKUP}
-  echo "Backup GLPI finished"
+  echo "GLPI file backup finished"
   rm -rf ${FOLDER_WEB}${FOLDER_GLPI}*
   echo "Old GLPI removed"
 fi
@@ -60,12 +60,13 @@ then
  	TAR_GLPI=glpi-${VERSION_GLPI}.tgz
   	rm -Rf ${FOLDER_WEB}${TAR_GLPI}
 else
+  echo "Upgrading GLPI files to \"$VERSION_GLPI\""
 	TAR_GLPI=glpi-${VERSION_GLPI}.tgz
 	tar -xzf ${FOLDER_WEB}${TAR_GLPI} -C ${FOLDER_WEB}
 	rm -Rf ${FOLDER_WEB}${TAR_GLPI}
   if [ "$GLPI_UPGRADE_MIGRATION" = true ];
   then
-    echo "Restore GLPI data"
+    echo "Restore backuped GLPI data"
     cp -Rf ${FOLDER_BACKUP}/files ${FOLDER_WEB}${FOLDER_GLPI}
     cp -Rf ${FOLDER_BACKUP}/plugins ${FOLDER_WEB}${FOLDER_GLPI}
     cp -Rf ${FOLDER_BACKUP}/config ${FOLDER_WEB}${FOLDER_GLPI}

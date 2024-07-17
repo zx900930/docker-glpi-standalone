@@ -312,3 +312,14 @@ Modify this variable in the docker compose file
 environment:
       - VERSION_PHP=8.3  # Optional, default to 8.3
 ```
+
+## GLPI_UPGRADE_MIGRATION
+
+If you upgrade the glpi version and need to do a database migration
+
+Modify this variable in the docker compose file, **remember to change the value back to false once the migration was done!!**
+
+```yaml
+environment:
+      - GLPI_UPGRADE_MIGRATION=true  # Optional, default to false
+```
