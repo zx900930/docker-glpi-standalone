@@ -43,7 +43,7 @@ then
 fi
 
 #check if need to upgrade glpi
-if [ "$GLPI_UPGRADE_MIGRATION" = true];
+if [ "$GLPI_UPGRADE_MIGRATION" = true ];
 then
   php ${FOLDER_WEB}${FOLDER_GLPI}bin/console glpi:maintenance:enable
   echo "Upgrading GLPI to \"$VERSION_GLPI\""
@@ -63,7 +63,7 @@ else
 	TAR_GLPI=glpi-${VERSION_GLPI}.tgz
 	tar -xzf ${FOLDER_WEB}${TAR_GLPI} -C ${FOLDER_WEB}
 	rm -Rf ${FOLDER_WEB}${TAR_GLPI}
-  if [ "$GLPI_UPGRADE_MIGRATION" = true];
+  if [ "$GLPI_UPGRADE_MIGRATION" = true ];
   then
     echo "Restore GLPI data"
     cp -Rf ${FOLDER_BACKUP}/files ${FOLDER_WEB}${FOLDER_GLPI}
@@ -125,7 +125,7 @@ else
 fi
 
 #migration glpi database
-if [ "$GLPI_UPGRADE_MIGRATION" = true];
+if [ "$GLPI_UPGRADE_MIGRATION" = true ];
 then
   echo "Migration GLPI database to \"$VERSION_GLPI\" ..."
   yes yes | php ${FOLDER_WEB}${FOLDER_GLPI}bin/console db:update
