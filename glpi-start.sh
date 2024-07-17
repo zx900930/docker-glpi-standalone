@@ -49,12 +49,12 @@ then
   echo "Upgrading GLPI to \"$VERSION_GLPI\""
   cp -Rf ${FOLDER_WEB}${FOLDER_GLPI} ${FOLDER_BACKUP}
   echo "Backup GLPI finished"
-  rm -rf ${FOLDER_WEB}${FOLDER_GLPI}
+  rm -rf ${FOLDER_WEB}${FOLDER_GLPI}*
   echo "Old GLPI removed"
 fi
 
 #Téléchargement et extraction des sources de GLPI
-if [ "$(ls ${FOLDER_WEB}${FOLDER_GLPI})" ];
+if [ "$(ls ${FOLDER_WEB}${FOLDER_GLPI}config)" ];
 then
 	echo "GLPI is already installed"
  	TAR_GLPI=glpi-${VERSION_GLPI}.tgz

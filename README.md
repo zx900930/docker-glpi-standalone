@@ -228,12 +228,13 @@ services:
     environment:
       - TIMEZONE=Europe/Brussels
       #- GLPI_ALIAS=glpi  # Optional, uncomment to deploy GLPI in a subfolder, default subdir is /glpi
-      - VERSION_GLPI=10.0.15  # Optional, default to 10.0.15
+      - VERSION_GLPI=10.0.16  # Optional, default to 10.0.16
       - VERSION_PHP=8.3  # Optional, default to 8.3
       - INSTALL_PLUGINS=false  # Optional, default to false
       - OPCACHE_SIZE=128  # Optional, default to 128
       - OPCACHE_BUFFER=8  # Optional, default to 8
       - OPCACHE_WASTED_PERCENTAGE=5  # Optional, default to 5
+      - GLPI_UPGRADE_MIGRATION=false  # Optional, default to false
     restart: always
 ```
 
@@ -274,7 +275,7 @@ If you need to deploy GLPI in a subfolder
 
 Modify this variable in the docker compose file
 
-``` yaml
+```yaml
 environment:
       #- GLPI_ALIAS=glpi  # Optional, uncomment to deploy GLPI in a subfolder, default subdir is /glpi
 ```
@@ -285,7 +286,7 @@ If you need to install plugins from ./plugins folder to GLPI
 
 Modify this variable in the docker compose file
 
-``` yaml
+```yaml
 environment:
       - INSTALL_PLUGINS=false  # Optional, default to false
 ```
@@ -296,7 +297,7 @@ If you need to deploy a different GLPI version
 
 Modify this variable in the docker compose file
 
-``` yaml
+```yaml
 environment:
       - VERSION_GLPI=10.0.15  # Optional, default to 10.0.15
 ```
@@ -307,8 +308,7 @@ If you need to deploy a different PHP version
 
 Modify this variable in the docker compose file
 
-``` yaml
+```yaml
 environment:
       - VERSION_PHP=8.3  # Optional, default to 8.3
 ```
-      
