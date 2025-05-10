@@ -606,14 +606,51 @@ class PluginDatainjectionCommonInjectionLib
                 $item    = new $tmptype();
                 if ($item instanceof CommonTreeDropdown) {
                    // use findID instead of getID
-                    $input =  ['completename' => $value,
+                    $input =  [
+                        'completename' => $value,
                         'entities_id'  => $this->entity
                     ];
 
-                    if ($item->canCreate() && $this->rights['add_dropdown']) {
-                        $id = $item->import($input);
+                    if ($item->getType() == 'Entity') { // Blocks entity creation. The findID method only searches for direct sub-entities of the root, not deeper levels.
+                        $crit = 'name';
+                        if (strpos($input['completename'], '>')) {
+                            $crit = 'completename';
+                        }
+                        $entity = new Entity();
+                        $result = $entity->getFromDBByCrit(
+                            [
+                                $crit => $input['completename'],
+                                'entities_id' => $input['entities_id']
+                            ]
+                        );
+
+                        if ($result !== false) {
+                            $input['entities_id'] = $entity->fields['id'];
+                        }
+
+                        $sons = getSonsOf('glpi_entities', $input['entities_id']);
+                        if ($result === false && !empty($sons)) {
+                            foreach ($sons as $son_id) {
+                                $result = $entity->getFromDBByCrit(
+                                    [
+                                        $crit => $input['completename'],
+                                        'entities_id' => $son_id
+                                    ]
+                                );
+                                if ($result !== false) {
+                                    $input['entities_id'] = $entity->fields['id'];
+                                    break;
+                                }
+                            }
+                        }
+
+                        $id = $input['entities_id'];
                     } else {
-                        $id = $item->findID($input);
+                        if ($item->canCreate() && $this->rights['add_dropdown']) {
+                            $id = $item->import($input);
+                        } else {
+                            $id = $item->findID($input);
+                        }
                     }
                 } else if ($item instanceof CommonDropdown) {
                     if ($item->canCreate() && $this->rights['add_dropdown']) {
@@ -1359,7 +1396,9 @@ class PluginDatainjectionCommonInjectionLib
     private function addNecessaryFields()
     {
 
-        $this->setValueForItemtype($this->primary_type, 'entities_id', $this->entity);
+        if (!isset($this->values[$this->primary_type]['entities_id'])) {
+            $this->setValueForItemtype($this->primary_type, 'entities_id', $this->entity);
+        }
         if (method_exists($this->injectionClass, 'addSpecificNeededFields')) {
             $specific_fields = $this->injectionClass->addSpecificNeededFields(
                 $this->primary_type,
@@ -1540,9 +1579,14 @@ class PluginDatainjectionCommonInjectionLib
 
                   //change order of items if needed
                     if (isset($this->values['NetworkPort']) && isset($this->values['NetworkName'])) {
-                        $np = $this->values['NetworkPort'];
+                        $nw = $this->values['NetworkPort'];
                         unset($this->values['NetworkPort']);
-                        $this->values = array('NetworkPort' => $np) + $this->values;
+                        $networkNameIndex = array_search('NetworkName', array_keys($this->values));
+                        $this->values = array_merge(
+                            array_slice($this->values, 0, $networkNameIndex),
+                            array('NetworkPort' => $nw),
+                            array_slice($this->values, $networkNameIndex)
+                        );
                     }
 
                     foreach ($this->values as $itemtype => $data) {
@@ -1598,10 +1642,34 @@ class PluginDatainjectionCommonInjectionLib
                 break;
             }
 
+            //CommonDBRelation are managed separately, so related field should be ignored
+            // Ex : User -> groups_id -> Group_User
+            // groups_id should not be injected in User (field contains group name (string))
+            if ($option !== false && isset($option['displaytype']) && $option['displaytype'] == 'relation' && !($item instanceof CommonDBRelation)) {
+                continue;
+            }
+
             if ($option !== false && self::isFieldADropdown($option['displaytype']) && $value == self::EMPTY_VALUE) {
                 //If field is a dropdown and value is '', then replace it by 0
                 $toinject[$key] = self::DROPDOWN_EMPTY_VALUE;
             } else {
+                $toinject[$key] = $value;
+            }
+
+            //for CommonDBRelation, keep items_id and itemtype and items_id_1
+            if (
+                $item instanceof CommonDBRelation
+                && in_array($key, [
+                    'items_id',
+                    'itemtype',
+                    $item::$items_id_1
+                ])
+            ) {
+                $toinject[$key] = $value;
+            }
+
+            //keep id in case of update
+            if (!$add && $key === 'id') {
                 $toinject[$key] = $value;
             }
         }
@@ -1627,7 +1695,7 @@ class PluginDatainjectionCommonInjectionLib
                // allow to update locked fields from datainjection
                // for dynamic item if needed
                 if ($item->maybeDynamic()) {
-                    $toinject['is_dynamic'] = 0;
+                    unset($toinject['is_dynamic']);
                 }
                 if ($item->update($toinject)) {
                     $newID = $toinject['id'];
@@ -2105,6 +2173,13 @@ class PluginDatainjectionCommonInjectionLib
                         $type_searchOptions[$id]['injectable'] = self::FIELD_VIRTUAL;
                     } else {
                         $type_searchOptions[$id]['injectable'] = self::FIELD_INJECTABLE;
+                    }
+
+                    //Some injection.class files are missing dropdown options. Set displaytype as dropdown if datatype is dropdown
+                    //$tmp['displaytype'] is still empty. Set to prevent overwriting on next IF
+                    if ((isset($tmp['datatype']) && $tmp['datatype'] == 'dropdown') && !isset($tmp['displaytype'])) {
+                        $type_searchOptions[$id]['displaytype'] = 'dropdown';
+                        $tmp['displaytype'] = 'dropdown';
                     }
 
                     if (isset($tmp['linkfield']) && !isset($tmp['displaytype'])) {

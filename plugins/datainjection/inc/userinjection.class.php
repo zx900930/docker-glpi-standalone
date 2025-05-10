@@ -39,7 +39,7 @@ class PluginDatainjectionUserInjection extends User implements PluginDatainjecti
     public static function getTable($classname = null)
     {
 
-        $parenttype = get_parent_class();
+        $parenttype = get_parent_class(__CLASS__);
         return $parenttype::getTable();
     }
 
@@ -99,12 +99,19 @@ class PluginDatainjectionUserInjection extends User implements PluginDatainjecti
 
        //Remove some options because some fields cannot be imported
         $blacklist     = PluginDatainjectionCommonInjectionLib::getBlacklistedOptions(get_parent_class($this));
-        $notimportable = [13, 14, 15, 17, 20, 23, 30, 31, 60, 61, 77, 91, 92, 93];
+        $notimportable = [13, 14, 15, 17, 20, 23, 30, 31, 60, 61, 91, 92, 93];
 
         $options['ignore_fields']  = array_merge($blacklist, $notimportable);
 
        //Add displaytype value
-        $options['displaytype']    = ["dropdown"       => [3, 79, 81, 82],
+        $options['displaytype']    = [
+            "dropdown"       => [
+                3, // location
+                77, // default entity
+                79, // default profile
+                81, // title
+                82 // category
+            ],
             "multiline_text" => [16],
             "bool"           => [8],
             "password"       => [4]

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #Controle du choix de version ou prise de la latest
-VERSION_GLPI="${VERSION_GLPI:=10.0.16}"
+VERSION_GLPI="${VERSION_GLPI:=10.0.17}"
 
 #Version of PHP
 VERSION_PHP="${VERSION_PHP:=8.3}"

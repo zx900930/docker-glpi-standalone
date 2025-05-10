@@ -446,7 +446,7 @@ class PluginDatainjectionModel extends CommonDBTM
             'id'            => 6,
             'table'         => $this->getTable(),
             'field'         => 'can_add_dropdown',
-            'name'          => __('Allow creation of dropdowns', 'datainjection'),
+            'name'          => __('Allow creation of dropdowns (Except Entity)', 'datainjection'),
             'datatype'      => 'bool',
         ];
 
@@ -719,7 +719,7 @@ class PluginDatainjectionModel extends CommonDBTM
          "</th></tr>";
 
         echo "<tr class='tab_bg_1'>";
-        echo "<td>" . __('Allow creation of dropdowns', 'datainjection') . "</td>";
+        echo "<td>" . __('Allow creation of dropdowns (Except Entity)', 'datainjection') . "</td>";
         echo "<td>";
         Dropdown::showYesNo("can_add_dropdown", $this->fields['can_add_dropdown']);
         echo "</td>";
@@ -746,6 +746,14 @@ class PluginDatainjectionModel extends CommonDBTM
         );
         echo "</td></tr>";
 
+        echo "<td>" . __('Port unicity criteria', 'datainjection') . "</td>";
+        echo "<td>";
+        Dropdown::showFromArray(
+            'port_unicity',
+            PluginDatainjectionDropdown::portUnicityValues(),
+            ['value' => $this->fields['port_unicity']]
+        );
+        echo "</td></tr>";
         if ($ID > 0) {
             $tmp = self::getInstance('csv');
             $tmp->showAdditionnalForm($this);
@@ -1332,29 +1340,29 @@ class PluginDatainjectionModel extends CommonDBTM
         /** @var DBmysql $DB */
         global $DB;
 
-        $model = new self();
-        $model->getFromDB($models_id);
-
         $continue = true;
 
-        $query = "(SELECT `itemtype`
-                 FROM `glpi_plugin_datainjection_models`
-                 WHERE `id` = '" . $models_id . "')
-                UNION (SELECT DISTINCT `itemtype`
-                       FROM `glpi_plugin_datainjection_mappings`
-                       WHERE `models_id` = '" . $models_id . "')
-                UNION (SELECT DISTINCT `itemtype`
-                       FROM `glpi_plugin_datainjection_infos`
-                       WHERE `models_id` = '" . $models_id . "')";
-        foreach ($DB->request($query) as $data) {
-            if ($data['itemtype'] != PluginDatainjectionInjectionType::NO_VALUE) {
-                if (class_exists($data['itemtype'])) {
-                    $item                     = new $data['itemtype']();
-                    $item->fields['itemtype'] = $model->fields['itemtype'];
+        $model = new self();
+        if ($model->getFromDB($models_id)) {
+            $query = "(SELECT `itemtype`
+                    FROM `glpi_plugin_datainjection_models`
+                    WHERE `id` = '" . $models_id . "')
+                    UNION (SELECT DISTINCT `itemtype`
+                        FROM `glpi_plugin_datainjection_mappings`
+                        WHERE `models_id` = '" . $models_id . "')
+                    UNION (SELECT DISTINCT `itemtype`
+                        FROM `glpi_plugin_datainjection_infos`
+                        WHERE `models_id` = '" . $models_id . "')";
+            foreach ($DB->request($query) as $data) {
+                if ($data['itemtype'] != PluginDatainjectionInjectionType::NO_VALUE) {
+                    if (class_exists($data['itemtype'])) {
+                        $item                     = new $data['itemtype']();
+                        $item->fields['itemtype'] = $model->fields['itemtype'];
 
-                    if (!($item instanceof CommonDBRelation) && !$item->canCreate()) {
-                        $continue = false;
-                        break;
+                        if (!($item instanceof CommonDBRelation) && !$item->canCreate()) {
+                            $continue = false;
+                            break;
+                        }
                     }
                 }
             }
