@@ -168,7 +168,7 @@ services:
     container_name: glpi
     hostname: glpi
     environment:
-      - VERSION_GLPI=10.0.17
+      - VERSION_GLPI=10.0.18
     ports:
       - "80:80"
 ```
@@ -230,7 +230,7 @@ services:
     environment:
       - TIMEZONE=Europe/Brussels
       #- GLPI_ALIAS=glpi  # Optional, uncomment to deploy GLPI in a subfolder, default subdir is /glpi
-      - VERSION_GLPI=10.0.17 # Optional, default to 10.0.17
+      - VERSION_GLPI=10.0.18 # Optional, default to 10.0.18
       - VERSION_PHP=8.3 # Optional, default to 8.3
       - INSTALL_PLUGINS=false # Optional, default to false
       - OPCACHE_SIZE=128 # Optional, default to 128
@@ -300,7 +300,7 @@ Modify this variable in the docker compose file
 
 ```yaml
 environment:
-  - VERSION_GLPI=10.0.17 # Optional, default to 10.0.17
+  - VERSION_GLPI=10.0.18 # Optional, default to 10.0.18
 ```
 
 ## VERSION_PHP
