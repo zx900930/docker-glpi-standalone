@@ -1,326 +1,313 @@
-# docker-glpi-standalone
+# GLPI Standalone Docker Image (Air-Gapped & Customizable)
 
-This fork is intended only to provide method to deploy glpi on air gap network. The official method does not permit to run the docker on air gap network as it try to download within the container the GLPI source.
+[Français](README_FR.md)
 
-It also help to fix the permissions issue between the container and the host by defining new UID/GID to www-data user/group so that it match a defined UID/GID on your host.
+[![Docker Pulls](https://img.shields.io/docker/pulls/triatk/glpi-standalone?style=flat-square)](https://hub.docker.com/r/triatk/glpi-standalone)
+[![Docker Image Size](https://img.shields.io/docker/image-size/triatk/glpi-standalone/latest?style=flat-square)](https://hub.docker.com/r/triatk/glpi-standalone)
+[![Visit on Docker Hub](https://img.shields.io/badge/Docker%20Hub-triatk%2Fglpi--standalone-blue?style=flat-square&logo=docker)](https://hub.docker.com/r/triatk/glpi-standalone)
 
-I decided to use 40000 as UID/GID as it is not common.
+This project provides a Docker image for GLPI, specifically designed for:
 
-In addition, it add support to deploy GLPI in a subfolder.
+1.  **Air-Gapped Network Deployment:** The official GLPI Docker image attempts to download GLPI sources from within the container, making it unsuitable for networks without internet access. This image bundles GLPI, allowing deployment in isolated environments.
+2.  **Host Permission Compatibility:** It resolves common permission issues between the Docker container and the host system by setting the `www-data` user/group within the container to a specific UID/GID (defaulting to `40000`). This ensures that volume mounts for persistent data have correct ownership.
+3.  **Subfolder Deployment:** Easily deploy GLPI within a subfolder (e.g., `http://yourdomain.com/glpi`).
+
+This fork is based on previous works and aims to provide a stable and convenient way to run GLPI in Docker.
 
 # Credits
 
-- [Oringinal repo by DiouxX](https://github.com/DiouxX/docker-glpi)
-- [The air-gapped mod by s0p4L1n3](https://github.com/s0p4L1n3/docker-glpi)
+This image builds upon the excellent work of:
 
-# Project to deploy GLPI with docker
-
-[](https://github.com/zx900930/docker-glpi-standalone#project-to-deploy-glpi-with-docker)
-
-[![Docker Pulls](https://camo.githubusercontent.com/42ddb30ff3603b49f4d40bb24eddcb09528ea0eca482f13da8d34ede6c647c80/68747470733a2f2f696d672e736869656c64732e696f2f646f636b65722f70756c6c732f64696f7578782f676c7069)](https://camo.githubusercontent.com/42ddb30ff3603b49f4d40bb24eddcb09528ea0eca482f13da8d34ede6c647c80/68747470733a2f2f696d672e736869656c64732e696f2f646f636b65722f70756c6c732f64696f7578782f676c7069) [![Docker Stars](https://camo.githubusercontent.com/8dfef08a98c3a0b6f46d03ad8ca01bb38cf63010c8fa33e292facffe5541f54c/68747470733a2f2f696d672e736869656c64732e696f2f646f636b65722f73746172732f64696f7578782f676c7069)](https://camo.githubusercontent.com/8dfef08a98c3a0b6f46d03ad8ca01bb38cf63010c8fa33e292facffe5541f54c/68747470733a2f2f696d672e736869656c64732e696f2f646f636b65722f73746172732f64696f7578782f676c7069) [![](https://camo.githubusercontent.com/2f2b98c937dda982c8ce150e5754e6e0d105ea99ac4cf8983a377c81d561e545/68747470733a2f2f696d616765732e6d6963726f6261646765722e636f6d2f6261646765732f696d6167652f64696f7578782f676c70692e737667)](http://microbadger.com/images/zx900930/glpi-standalone "Get your own image badge on microbadger.com") [![Docker Cloud Automated build](https://camo.githubusercontent.com/626722f18660937d134f54b0b8734072e7402cf977f0981645464f74fb0dafd8/68747470733a2f2f696d672e736869656c64732e696f2f646f636b65722f636c6f75642f6175746f6d617465642f64696f7578782f676c7069)](https://camo.githubusercontent.com/626722f18660937d134f54b0b8734072e7402cf977f0981645464f74fb0dafd8/68747470733a2f2f696d672e736869656c64732e696f2f646f636b65722f636c6f75642f6175746f6d617465642f64696f7578782f676c7069)
+- [Original repo by DiouxX](https://github.com/DiouxX/docker-glpi)
+- [Air-gapped mod by s0p4L1n3](https://github.com/s0p4L1n3/docker-glpi)
+- And contributions from the community.
 
 # Table of Contents
 
-[](https://github.com/zx900930/docker-glpi-standalone#table-of-contents)
-
-- [Project to deploy GLPI with docker](https://github.com/zx900930/docker-glpi-standalone#project-to-deploy-glpi-with-docker)
-- [Table of Contents](https://github.com/zx900930/docker-glpi-standalone#table-of-contents)
-- [Introduction](https://github.com/zx900930/docker-glpi-standalone#introduction)
-  - [Default accounts](https://github.com/zx900930/docker-glpi-standalone#default-accounts)
-- [Deploy with CLI](https://github.com/zx900930/docker-glpi-standalone#deploy-with-cli)
-  - [Deploy GLPI](https://github.com/zx900930/docker-glpi-standalone#deploy-glpi)
-  - [Deploy GLPI with existing database](https://github.com/zx900930/docker-glpi-standalone#deploy-glpi-with-existing-database)
-  - [Deploy GLPI with database and persistence data](https://github.com/zx900930/docker-glpi-standalone#deploy-glpi-with-database-and-persistence-data)
-  - [Deploy a specific release of GLPI](https://github.com/zx900930/docker-glpi-standalone#deploy-a-specific-release-of-glpi)
-- [Deploy with docker-compose](https://github.com/zx900930/docker-glpi-standalone#deploy-with-docker-compose)
-  - [Deploy without persistence data ( for quickly test )](https://github.com/zx900930/docker-glpi-standalone#deploy-without-persistence-data--for-quickly-test-)
-  - [Deploy a specific release](https://github.com/zx900930/docker-glpi-standalone#deploy-a-specific-release)
-  - [Deploy with persistence data](https://github.com/zx900930/docker-glpi-standalone#deploy-with-persistence-data)
-    - [mariadb.env](https://github.com/zx900930/docker-glpi-standalone#mariadbenv)
-    - [docker-compose .yml](https://github.com/zx900930/docker-glpi-standalone#docker-compose-yml)
-- [Environnment variables](https://github.com/zx900930/docker-glpi-standalone#environnment-variables)
-  - [TIMEZONE](https://github.com/zx900930/docker-glpi-standalone#timezone)
+- [Introduction](#introduction)
+  - [Default Accounts](#default-accounts)
+- [Deploy with CLI](#deploy-with-cli)
+  - [Deploy GLPI](#deploy-glpi)
+  - [Deploy GLPI with Existing Database](#deploy-glpi-with-existing-database)
+  - [Deploy GLPI with Database and Persistence Data](#deploy-glpi-with-database-and-persistence-data)
+  - [Deploy a Specific Release of GLPI](#deploy-a-specific-release-of-glpi)
+- [Deploy with Docker Compose](#deploy-with-docker-compose)
+  - [Quick Test (No Persistence)](#quick-test-no-persistence)
+  - [Deploy a Specific Release with Persistence](#deploy-a-specific-release-with-persistence)
+    - [mariadb.env example](#mariadbenv-example)
+    - [docker-compose.yml example](#docker-composeyml-example)
+- [Environment Variables](#environment-variables)
+  - [TIMEZONE](#timezone)
+  - [GLPI_ALIAS](#glpi_alias)
+  - [INSTALL_PLUGINS](#install_plugins)
+  - [VERSION_GLPI](#version_glpi)
+  - [VERSION_PHP](#version_php)
+  - [GLPI_UPGRADE_MIGRATION](#glpi_upgrade_migration)
+  - [Other PHP & Opcache Settings](#other-php--opcache-settings)
 
 # Introduction
 
-[](https://github.com/zx900930/docker-glpi-standalone#introduction)
+Install and run a GLPI instance using the `triatk/glpi-standalone` Docker image.
 
-Install and run an GLPI instance with docker
+## Default Accounts
 
-## Default accounts
-
-[](https://github.com/zx900930/docker-glpi-standalone#default-accounts)
-
-More info in the 📄[Docs](https://glpi-install.readthedocs.io/en/latest/install/wizard.html#end-of-installation)
+After installation, you can log in with the default GLPI accounts. More info in the 📄[Official GLPI Installation Docs](https://glpi-install.readthedocs.io/en/latest/install/wizard.html#end-of-installation).
 
 | Login/Password     | Role              |
 | ------------------ | ----------------- |
-| glpi/glpi          | admin account     |
-| tech/tech          | technical account |
-| normal/normal      | "normal" account  |
-| post-only/postonly | post-only account |
+| glpi/glpi          | Admin account     |
+| tech/tech          | Technical account |
+| normal/normal      | "Normal" account  |
+| post-only/postonly | Post-only account |
 
 # Deploy with CLI
 
-[](https://github.com/zx900930/docker-glpi-standalone#deploy-with-cli)
-
 ## Deploy GLPI
 
-[](https://github.com/zx900930/docker-glpi-standalone#deploy-glpi)
+This example starts GLPI and a new MariaDB database container.
 
 ```shell
-docker run --name mariadb -e MARIADB_ROOT_PASSWORD=diouxx -e MARIADB_DATABASE=glpidb -e MARIADB_USER=glpi_user -e MARIADB_PASSWORD=glpi -d mariadb:10.7
-docker run --name glpi --link mariadb:mariadb -p 80:80 -d zx900930/glpi-standalone
+# Start MariaDB
+docker run --name mariadb \
+  -e MARIADB_ROOT_PASSWORD=your_strong_root_password \
+  -e MARIADB_DATABASE=glpidb \
+  -e MARIADB_USER=glpi_user \
+  -e MARIADB_PASSWORD=your_strong_glpi_password \
+  -d mariadb:10.11 # Or your preferred MariaDB version
+
+# Start GLPI (replace 10.0.18 with the desired/latest stable tag from Docker Hub)
+docker run --name glpi \
+  --link mariadb:mariadb \
+  -p 8080:80 \
+  -d triatk/glpi-standalone:10.0.18
 ```
 
-## Deploy GLPI with existing database
+Access GLPI at `http://localhost:8080`.
 
-[](https://github.com/zx900930/docker-glpi-standalone#deploy-glpi-with-existing-database)
+## Deploy GLPI with Existing Database
+
+If you have an existing MariaDB/MySQL database:
 
 ```shell
-docker run --name glpi --link yourdatabase:mariadb -p 80:80 -d zx900930/glpi-standalone
+# Replace 10.0.18 with the desired/latest stable tag
+docker run --name glpi \
+  --link your_existing_database_container_name:mariadb \
+  -p 8080:80 \
+  -d triatk/glpi-standalone:10.0.18
 ```
 
-## Deploy GLPI with database and persistence data
+Ensure your GLPI container can connect to `your_existing_database_container_name` on port 3306 and has the necessary credentials.
 
-[](https://github.com/zx900930/docker-glpi-standalone#deploy-glpi-with-database-and-persistence-data)
+## Deploy GLPI with Database and Persistence Data
 
-For an usage on production environnement or daily usage, it's recommanded to use container with volumes to persistent data.
-
-- First, create MariaDB container with volume
+For production or daily usage, use volumes to persist data.
 
 ```shell
-docker run --name mariadb -e MARIADB_ROOT_PASSWORD=diouxx -e MARIADB_DATABASE=glpidb -e MARIADB_USER=glpi_user -e MARIADB_PASSWORD=glpi --volume /var/lib/mysql:/var/lib/mysql -d mariadb:10.7
+# Create a Docker volume for MariaDB data (recommended)
+docker volume create mariadb_data
+
+# Create Docker volumes for GLPI data (recommended)
+docker volume create glpi_data # For GLPI files, marketplace, plugins etc.
+docker volume create glpi_config # For GLPI config
+docker volume create glpi_logs # For GLPI logs
+
+# Start MariaDB with persistent data
+docker run --name mariadb \
+  -e MARIADB_ROOT_PASSWORD=your_strong_root_password \
+  -e MARIADB_DATABASE=glpidb \
+  -e MARIADB_USER=glpi_user \
+  -e MARIADB_PASSWORD=your_strong_glpi_password \
+  --volume mariadb_data:/var/lib/mysql \
+  -d mariadb:10.11
+
+# Start GLPI with persistent data (replace 10.0.18 with desired/latest tag)
+# Default UID/GID for www-data is 40000. If your host needs a different one for volume permissions,
+# you might need to adjust host folder permissions or chown data within the volume.
+docker run --name glpi \
+  --link mariadb:mariadb \
+  --volume glpi_data:/var/www/html/glpi \
+  --volume glpi_config:/var/www/html/glpi/config \
+  --volume glpi_logs:/var/www/html/glpi/files/_log \
+  -p 8080:80 \
+  -d triatk/glpi-standalone:10.0.18
 ```
 
-- Then, create GLPI container with volume and link MariaDB container
+## Deploy a Specific Release of GLPI
+
+The Docker image tag often corresponds to a GLPI version (e.g., `triatk/glpi-standalone:10.0.18`).
+You can also use the `VERSION_GLPI` environment variable if the image tag is more generic (like `latest`), though using specific image tags is recommended for production.
 
 ```shell
-docker run --name glpi --link mariadb:mariadb --volume /var/www/html/glpi:/var/www/html/glpi -p 80:80 -d zx900930/glpi-standalone
+# Example using environment variable (if image tag is generic)
+docker run --name glpi \
+  --link mariadb:mariadb \
+  --volume glpi_data:/var/www/html/glpi \
+  -p 8080:80 \
+  -e "VERSION_GLPI=10.0.12" \
+  -d triatk/glpi-standalone:latest # Or a specific base image tag
 ```
 
-Enjoy :)
+**Note:** Always check [Docker Hub (`triatk/glpi-standalone`)](https://hub.docker.com/r/triatk/glpi-standalone/tags) for available tags.
 
-## Deploy a specific release of GLPI
+# Deploy with Docker Compose
 
-[](https://github.com/zx900930/docker-glpi-standalone#deploy-a-specific-release-of-glpi)
+Using `docker-compose` is recommended for managing multi-container applications.
 
-Default, docker run will use the latest release of GLPI. For an usage on production environnement, it's recommanded to set specific release. Here an example for release 9.1.6 :
+## Quick Test (No Persistence)
 
-```shell
-docker run --name glpi --hostname glpi --link mariadb:mariadb --volume /var/www/html/glpi:/var/www/html/glpi -p 80:80 --env "VERSION_GLPI=9.1.6" -d zx900930/glpi-standalone
-```
-
-# Deploy with docker-compose
-
-[](https://github.com/zx900930/docker-glpi-standalone#deploy-with-docker-compose)
-
-## Deploy without persistence data ( for quickly test )
-
-[](https://github.com/zx900930/docker-glpi-standalone#deploy-without-persistence-data--for-quickly-test-)
+This `docker-compose.yml` is for quick testing; data will be lost when containers are removed.
 
 ```yaml
 version: "3.8"
 
 services:
-  #MariaDB Container
   mariadb:
-    image: mariadb:10.7
-    container_name: mariadb
+    image: mariadb:10.11 # Use a specific, recent, stable version
+    container_name: mariadb-glpi
     hostname: mariadb
     environment:
-      - MARIADB_ROOT_PASSWORD=password
+      - MARIADB_ROOT_PASSWORD=mysecretrootpassword
       - MARIADB_DATABASE=glpidb
       - MARIADB_USER=glpi_user
-      - MARIADB_PASSWORD=glpi
+      - MARIADB_PASSWORD=glpiuserpassword
+    restart: unless-stopped
 
-  #GLPI Container
   glpi:
-    image: triatk/glpi-standalone
-    container_name: glpi
+    # Check Docker Hub for the latest stable tag: https://hub.docker.com/r/triatk/glpi-standalone/tags
+    image: triatk/glpi-standalone:10.0.18 # Use a specific version tag
+    container_name: glpi-app
     hostname: glpi
+    depends_on:
+      - mariadb
     ports:
-      - "80:80"
-```
-
-## Deploy a specific release
-
-[](https://github.com/zx900930/docker-glpi-standalone#deploy-a-specific-release)
-
-```yaml
-version: "3.8"
-
-services:
-  #MariaDB Container
-  mariadb:
-    image: mariadb:10.7
-    container_name: mariadb
-    hostname: mariadb
+      - "8080:80" # Host port 8080 maps to container port 80
     environment:
-      - MARIADB_ROOT_PASSWORD=password
-      - MARIADB_DATABASE=glpidb
-      - MARIADB_USER=glpi_user
-      - MARIADB_PASSWORD=glpi
-
-  #GLPI Container
-  glpi:
-    image: triatk/glpi-standalone
-    container_name: glpi
-    hostname: glpi
-    environment:
-      - VERSION_GLPI=10.0.18
-    ports:
-      - "80:80"
+      - TIMEZONE=Europe/Paris
+      # - VERSION_GLPI=10.0.18 # Often determined by the image tag, but can be set
+    restart: unless-stopped
 ```
 
-## Deploy with persistence data
+## Deploy a Specific Release with Persistence
 
-[](https://github.com/zx900930/docker-glpi-standalone#deploy-with-persistence-data)
+This is a more complete example for production, using named volumes for data persistence and an `.env` file for database credentials.
 
-To deploy with docker compose, you use _docker-compose.yml_ and _mariadb.env_ file. You can modify **_mariadb.env_** to personalize settings like :
+**Create a `mariadb.env` file (or use direct environment variables in `docker-compose.yml`):**
 
-- MariaDB root password
-- GLPI database
-- GLPI user database
-- GLPI user password
+### mariadb.env example
 
-### mariadb.env
-
-[](https://github.com/zx900930/docker-glpi-standalone#mariadbenv)
-
-```
-MARIADB_ROOT_PASSWORD=diouxx
+```env
+MARIADB_ROOT_PASSWORD=your_very_strong_root_password
 MARIADB_DATABASE=glpidb
 MARIADB_USER=glpi_user
-MARIADB_PASSWORD=glpi
+MARIADB_PASSWORD=your_secure_glpi_password
 ```
 
-### docker-compose .yml
-
-[](https://github.com/zx900930/docker-glpi-standalone#docker-compose-yml)
+### docker-compose.yml example
 
 ```yaml
-version: "3.2"
+version: "3.8"
 
 services:
-  #MariaDB Container
   mariadb:
-    image: mariadb:10.7
-    container_name: mariadb
+    image: mariadb:10.11 # Use a specific, recent, stable version
+    container_name: mariadb-glpi-prod
     hostname: mariadb
     volumes:
-      - /var/lib/mysql:/var/lib/mysql
+      - mariadb_data:/var/lib/mysql
     env_file:
-      - ./mariadb.env
+      - ./mariadb.env # Loads variables from mariadb.env
     restart: always
 
-  #GLPI Container
   glpi:
-    image: triatk/glpi-standalone
-    container_name: glpi
+    # Check Docker Hub for the latest stable tag: https://hub.docker.com/r/triatk/glpi-standalone/tags
+    image: triatk/glpi-standalone:10.0.18 # Use a specific version tag
+    container_name: glpi-app-prod
     hostname: glpi
+    depends_on:
+      - mariadb
     ports:
-      - "80:80"
+      - "80:80" # Or "8080:80" if port 80 is taken on the host
     volumes:
-      - /etc/timezone:/etc/timezone:ro
-      - /etc/localtime:/etc/localtime:ro
-      - /var/www/html/glpi/:/var/www/html/glpi
-      #- /opt/glpi/plugins/:/plugins # you can install your own plugins by mount the plugins directory and modify the env INSTALL_PLUGINS to true.
-      #- /opt/glpi/backup_glpi/:/backup_glpi # you can persist the backup data by mounting a backup folder.
+      # Named volumes for GLPI data persistence
+      - glpi_config:/var/www/html/glpi/config
+      - glpi_files:/var/www/html/glpi/files # Includes documents, dumps, logs, plugins etc.
+      - glpi_marketplace:/var/www/html/glpi/marketplace
+      # To use local plugins:
+      # - ./my_plugins/:/var/www/html/glpi/plugins/ # Mount your local plugins folder
     environment:
-      - TIMEZONE=Europe/Brussels
-      #- GLPI_ALIAS=glpi  # Optional, uncomment to deploy GLPI in a subfolder, default subdir is /glpi
-      - VERSION_GLPI=10.0.18 # Optional, default to 10.0.18
-      - VERSION_PHP=8.3 # Optional, default to 8.3
-      - INSTALL_PLUGINS=false # Optional, default to false
-      - OPCACHE_SIZE=128 # Optional, default to 128
-      - OPCACHE_BUFFER=8 # Optional, default to 8
-      - OPCACHE_WASTED_PERCENTAGE=5 # Optional, default to 5
-      - GLPI_UPGRADE_MIGRATION=false # Optional, default to false
+      - TIMEZONE=Europe/Brussels # e.g., Europe/Paris, America/New_York
+      # - GLPI_ALIAS=glpi  # Uncomment to deploy GLPI in a subfolder (e.g., /glpi)
+      # - VERSION_GLPI=10.0.18 # Usually set by the image tag, confirm if needed
+      # - VERSION_PHP=8.3 # If the image supports multiple PHP versions via env var
+      - INSTALL_PLUGINS=false # Set to true if you mount a plugins folder and want them installed
+      - OPCACHE_SIZE=128
+      - OPCACHE_BUFFER=8
+      - OPCACHE_WASTED_PERCENTAGE=5
+      - GLPI_UPGRADE_MIGRATION=false # Set to true only during a version upgrade migration
     restart: always
+
+volumes:
+  mariadb_data:
+  glpi_config:
+  glpi_files:
+  glpi_marketplace:
 ```
 
-To deploy, just run the following command on the same directory as files
+To deploy, save the files and run in the same directory:
 
 ```shell
 docker-compose up -d
 ```
 
-# Environnment variables
+# Environment Variables
 
-[](https://github.com/zx900930/docker-glpi-standalone#environnment-variables)
+The `triatk/glpi-standalone` image supports several environment variables for configuration:
 
 ## TIMEZONE
 
-[](https://github.com/zx900930/docker-glpi-standalone#timezone)
+Sets the timezone for PHP and Apache.
 
-If you need to set timezone for Apache and PHP
-
-From commande line
-
-```shell
-docker run --name glpi --hostname glpi --link mariadb:mariadb --volumes-from glpi-data -p 80:80 --env "TIMEZONE=Europe/Brussels" -d zx900930/glpi-standalone
-```
-
-From docker-compose
-
-Modify this settings
-
-```yaml
-environment: TIMEZONE=Europe/Brussels
-```
+- Example: `TIMEZONE=Europe/Paris`
+- See [List of Supported Timezones](https://www.php.net/manual/en/timezones.php).
 
 ## GLPI_ALIAS
 
-If you need to deploy GLPI in a subfolder
+Deploys GLPI in a subfolder (e.g., `http://yourhost/glpi_alias_value`).
 
-Modify this variable in the docker compose file
-
-```yaml
-environment:
-  #- GLPI_ALIAS=glpi  # Optional, uncomment to deploy GLPI in a subfolder, default subdir is /glpi
-```
+- Example: `GLPI_ALIAS=helpdesk`
+- If set, GLPI will be accessible at `/helpdesk`.
 
 ## INSTALL_PLUGINS
 
-If you need to install plugins from ./plugins folder to GLPI
+If set to `true`, the container will attempt to install/enable plugins found in the `/var/www/html/glpi/plugins/` directory (which you can mount as a volume).
 
-Modify this variable in the docker compose file
-
-```yaml
-environment:
-  - INSTALL_PLUGINS=false # Optional, default to false
-```
+- Default: `false`
+- Example: `INSTALL_PLUGINS=true`
 
 ## VERSION_GLPI
 
-If you need to deploy a different GLPI version
+Specifies the GLPI version to install/ensure, if the image supports dynamic version fetching (less common with pre-built standalone images). It's often tied to the image tag.
 
-Modify this variable in the docker compose file
-
-```yaml
-environment:
-  - VERSION_GLPI=10.0.18 # Optional, default to 10.0.18
-```
+- Example: `VERSION_GLPI=10.0.18`
+- **Note:** Prefer using a specific image tag like `triatk/glpi-standalone:10.0.18`.
 
 ## VERSION_PHP
 
-If you need to deploy a different PHP version
+Allows selecting a specific PHP version if the image is built to support multiple PHP-FPM versions.
 
-Modify this variable in the docker compose file
-
-```yaml
-environment:
-  - VERSION_PHP=8.3 # Optional, default to 8.3
-```
+- Example: `VERSION_PHP=8.3` (Default often set in image)
+- Check image documentation/Dockerfile for supported PHP versions.
 
 ## GLPI_UPGRADE_MIGRATION
 
-If you upgrade the glpi version and need to do a database migration
+Set to `true` when you are upgrading GLPI to a new version that requires a database schema migration. The application will attempt to run the migration scripts.
 
-Modify this variable in the docker compose file, **remember to change the value back to false once the migration was done!!**
+- Default: `false`
+- Example: `GLPI_UPGRADE_MIGRATION=true`
+- **Important:** Set this back to `false` after the migration is successfully completed.
 
-```yaml
-environment:
-  - GLPI_UPGRADE_MIGRATION=true # Optional, default to false
-```
+## Other PHP & Opcache Settings
+
+- `OPCACHE_SIZE`: Opcache memory size in MB (e.g., `128`).
+- `OPCACHE_BUFFER`: Opcache interned strings buffer size in MB (e.g., `8`).
+- `OPCACHE_WASTED_PERCENTAGE`: Opcache wasted memory percentage to trigger restart (e.g., `5`).
