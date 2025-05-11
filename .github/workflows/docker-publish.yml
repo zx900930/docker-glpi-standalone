@@ -6,6 +6,10 @@ on:
       - 'main'
     tags:
       - "*.*.*"
+    paths-ignore:
+      - 'README.md'
+      - 'LICENSE'
+      - 'README_FR.md'
 
 jobs:
   docker:
