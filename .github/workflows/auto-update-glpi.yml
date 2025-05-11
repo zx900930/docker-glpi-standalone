@@ -1,0 +1,150 @@
+name: Auto Update GLPI Version
+
+on:
+  schedule:
+    # Runs at 03:00 UTC every Monday
+    - cron: "0 3 * * 1"
+  workflow_dispatch: # Allows manual triggering
+
+permissions:
+  contents: write # To commit changes, create tags, and create releases
+
+jobs:
+  check-and-update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get current version from Dockerfile
+        id: current_version_dockerfile
+        run: |
+          CURRENT_VERSION_IN_FILE=$(grep 'ENV VERSION_GLPI=' Dockerfile | cut -d'"' -f2)
+          echo "Current version in Dockerfile: $CURRENT_VERSION_IN_FILE"
+          if [ -z "$CURRENT_VERSION_IN_FILE" ]; then
+            echo "Error: Could not extract current version from Dockerfile."
+            exit 1
+          fi
+          echo "version=$CURRENT_VERSION_IN_FILE" >> $GITHUB_OUTPUT
+
+      - name: Get latest GLPI release version
+        id: latest_glpi_release
+        run: |
+          NEW_GLPI_VERSION=$(curl -sL https://api.github.com/repos/glpi-project/glpi/releases/latest | jq -r .tag_name)
+          echo "Latest GLPI version from upstream (glpi-project/glpi): $NEW_GLPI_VERSION"
+          if [ -z "$NEW_GLPI_VERSION" ]; then
+            echo "Error: Could not fetch latest GLPI release version from upstream."
+            exit 1
+          fi
+          echo "version=$NEW_GLPI_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Compare versions and proceed if new version is available
+        id: version_check
+        run: |
+          CURRENT_VER="${{ steps.current_version_dockerfile.outputs.version }}"
+          LATEST_UPSTREAM_VER="${{ steps.latest_glpi_release.outputs.version }}"
+
+          echo "Comparing Current in Dockerfile: $CURRENT_VER with Latest Upstream GLPI: $LATEST_UPSTREAM_VER"
+
+          if dpkg --compare-versions "$LATEST_UPSTREAM_VER" gt "$CURRENT_VER"; then
+            echo "New GLPI version available: $LATEST_UPSTREAM_VER"
+            echo "update_needed=true" >> $GITHUB_OUTPUT
+          else
+            echo "Current version $CURRENT_VER is up-to-date or newer than upstream $LATEST_UPSTREAM_VER. No update needed."
+            echo "update_needed=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Update files if new version is available
+        if: steps.version_check.outputs.update_needed == 'true'
+        run: |
+          CURRENT_VER_IN_FILES="${{ steps.current_version_dockerfile.outputs.version }}"
+          NEW_UPSTREAM_GLPI_VER="${{ steps.latest_glpi_release.outputs.version }}"
+
+          echo "Updating files from $CURRENT_VER_IN_FILES to $NEW_UPSTREAM_GLPI_VER..."
+
+          # 1. Update Dockerfile
+          sed -i "s/ENV VERSION_GLPI=\"${CURRENT_VER_IN_FILES}\"/ENV VERSION_GLPI=\"${NEW_UPSTREAM_GLPI_VER}\"/" Dockerfile
+          echo "Dockerfile updated."
+
+          # 2. Update docker-compose.yml
+          sed -i "s|image: triatk/glpi-standalone:${CURRENT_VER_IN_FILES}|image: triatk/glpi-standalone:${NEW_UPSTREAM_GLPI_VER}|g" docker-compose.yml
+          sed -i "s/- VERSION_GLPI=${CURRENT_VER_IN_FILES}/- VERSION_GLPI=${NEW_UPSTREAM_GLPI_VER}/g" docker-compose.yml
+          echo "docker-compose.yml updated."
+
+          # 3. Update glpi-start.sh
+          sed -i "s/:=${CURRENT_VER_IN_FILES}}/:=${NEW_UPSTREAM_GLPI_VER}}/" glpi-start.sh
+          echo "glpi-start.sh updated."
+
+          # 4. Update README.md
+          # Update image tags in examples
+          sed -i "s|triatk/glpi-standalone:${CURRENT_VER_IN_FILES}|triatk/glpi-standalone:${NEW_UPSTREAM_GLPI_VER}|g" README.md
+          # Update VERSION_GLPI env var in examples
+          sed -i "s|- VERSION_GLPI=${CURRENT_VER_IN_FILES}|- VERSION_GLPI=${NEW_UPSTREAM_GLPI_VER}|g" README.md
+          # Update textual mentions (make this specific to your phrasing)
+          sed -i "s|GLPI version ${CURRENT_VER_IN_FILES}|GLPI version ${NEW_UPSTREAM_GLPI_VER}|g" README.md
+          # Update any specific release mentions in titles or text
+          sed -i "s|Release of GLPI ${CURRENT_VER_IN_FILES}|Release of GLPI ${NEW_UPSTREAM_GLPI_VER}|g" README.md
+          # Update any specific version in CLI examples
+          sed -i "s|triatk/glpi-standalone:${CURRENT_VER_IN_FILES}|triatk/glpi-standalone:${NEW_UPSTREAM_GLPI_VER}|g" README.md
+          echo "README.md updated."
+
+          # 5. Update README_FR.md
+          # Update image tags in examples
+          sed -i "s|triatk/glpi-standalone:${CURRENT_VER_IN_FILES}|triatk/glpi-standalone:${NEW_UPSTREAM_GLPI_VER}|g" README_FR.md
+          # Update VERSION_GLPI env var in examples
+          sed -i "s|- VERSION_GLPI=${CURRENT_VER_IN_FILES}|- VERSION_GLPI=${NEW_UPSTREAM_GLPI_VER}|g" README_FR.md
+          # Update textual mentions (make this specific to your phrasing)
+          sed -i "s|version ${CURRENT_VER_IN_FILES} de GLPI|version ${NEW_UPSTREAM_GLPI_VER} de GLPI|g" README_FR.md
+          sed -i "s|version GLPI ${CURRENT_VER_IN_FILES}|version GLPI ${NEW_UPSTREAM_GLPI_VER}|g" README_FR.md
+          # Update any specific release mentions in titles or text
+          sed -i "s|Version Spécifique de GLPI ${CURRENT_VER_IN_FILES}|Version Spécifique de GLPI ${NEW_UPSTREAM_GLPI_VER}|g" README_FR.md
+          # Update any specific version in CLI examples
+          sed -i "s|triatk/glpi-standalone:${CURRENT_VER_IN_FILES}|triatk/glpi-standalone:${NEW_UPSTREAM_GLPI_VER}|g" README_FR.md
+          echo "README_FR.md updated."
+
+      - name: Commit and push changes
+        if: steps.version_check.outputs.update_needed == 'true'
+        run: |
+          NEW_UPSTREAM_GLPI_VER="${{ steps.latest_glpi_release.outputs.version }}"
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          # Add README files to the git add command
+          git add Dockerfile docker-compose.yml glpi-start.sh README.md README_FR.md
+          git commit -m "Bump GLPI to ${NEW_UPSTREAM_GLPI_VER}
+
+          Automated update to GLPI version ${NEW_UPSTREAM_GLPI_VER} based on upstream release.
+          Updated Dockerfile, docker-compose.yml, glpi-start.sh, README.md, and README_FR.md.
+
+          See: https://github.com/glpi-project/glpi/releases/tag/${NEW_UPSTREAM_GLPI_VER}"
+          BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
+          git push origin "$BRANCH_NAME"
+          echo "Changes pushed to branch $BRANCH_NAME."
+
+      - name: Create Git tag
+        if: steps.version_check.outputs.update_needed == 'true'
+        run: |
+          NEW_REPO_TAG_NAME="${{ steps.latest_glpi_release.outputs.version }}"
+          git tag "$NEW_REPO_TAG_NAME" -m "Release GLPI Standalone based on GLPI ${NEW_REPO_TAG_NAME}"
+          git push origin "$NEW_REPO_TAG_NAME"
+          echo "Tag $NEW_REPO_TAG_NAME pushed."
+
+      - name: Create GitHub Release
+        if: steps.version_check.outputs.update_needed == 'true'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.latest_glpi_release.outputs.version }}
+          name: GLPI Standalone ${{ steps.latest_glpi_release.outputs.version }}
+          body: |
+            Automated release for GLPI Standalone.
+            This image incorporates GLPI version ${{ steps.latest_glpi_release.outputs.version }}.
+            Documentation and examples have been updated to reflect this version.
+
+            Upstream GLPI release notes: https://github.com/glpi-project/glpi/releases/tag/${{ steps.latest_glpi_release.outputs.version }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: No update performed
+        if: steps.version_check.outputs.update_needed == 'false'
+        run: echo "No update was performed as the current version is up-to-date or newer."
