@@ -14,7 +14,7 @@ services:
 
   #GLPI Container
   glpi:
-    image: triatk/glpi-standalone:11.0.1
+    image: triatk/glpi-standalone:11.0.2
     container_name: glpi
     hostname: glpi
     ports:
@@ -26,7 +26,7 @@ services:
     environment:
       - TIMEZONE=Europe/Brussels
       #- GLPI_ALIAS=glpi  # Optional, uncomment to deploy GLPI in a subfolder, default subdir is /glpi
-      - VERSION_GLPI=11.0.1 # Optional, default to 10.0.18
+      - VERSION_GLPI=11.0.2 # Optional, default to 10.0.18
       - VERSION_PHP=8.3 # Optional, default to 8.3
       - INSTALL_PLUGINS=false # Optional, default to false
       - OPCACHE_SIZE=128 # Optional, default to 128

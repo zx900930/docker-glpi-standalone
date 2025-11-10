@@ -79,7 +79,7 @@ docker run --name mariadb \
 docker run --name glpi \
   --link mariadb:mariadb \
   -p 8080:80 \
-  -d triatk/glpi-standalone:11.0.1
+  -d triatk/glpi-standalone:11.0.2
 ```
 
 Access GLPI at `http://localhost:8080`.
@@ -93,7 +93,7 @@ If you have an existing MariaDB/MySQL database:
 docker run --name glpi \
   --link your_existing_database_container_name:mariadb \
   -p 8080:80 \
-  -d triatk/glpi-standalone:11.0.1
+  -d triatk/glpi-standalone:11.0.2
 ```
 
 Ensure your GLPI container can connect to `your_existing_database_container_name` on port 3306 and has the necessary credentials.
@@ -129,12 +129,12 @@ docker run --name glpi \
   --volume glpi_config:/var/www/html/glpi/config \
   --volume glpi_logs:/var/www/html/glpi/files/_log \
   -p 8080:80 \
-  -d triatk/glpi-standalone:11.0.1
+  -d triatk/glpi-standalone:11.0.2
 ```
 
 ## Deploy a Specific Release of GLPI
 
-The Docker image tag often corresponds to a GLPI version (e.g., `triatk/glpi-standalone:11.0.1`).
+The Docker image tag often corresponds to a GLPI version (e.g., `triatk/glpi-standalone:11.0.2`).
 You can also use the `VERSION_GLPI` environment variable if the image tag is more generic (like `latest`), though using specific image tags is recommended for production.
 
 ```shell
@@ -174,7 +174,7 @@ services:
 
   glpi:
     # Check Docker Hub for the latest stable tag: https://hub.docker.com/r/triatk/glpi-standalone/tags
-    image: triatk/glpi-standalone:11.0.1 # Use a specific version tag
+    image: triatk/glpi-standalone:11.0.2 # Use a specific version tag
     container_name: glpi-app
     hostname: glpi
     depends_on:
@@ -183,7 +183,7 @@ services:
       - "8080:80" # Host port 8080 maps to container port 80
     environment:
       - TIMEZONE=Europe/Paris
-      # - VERSION_GLPI=11.0.1 # Often determined by the image tag, but can be set
+      # - VERSION_GLPI=11.0.2 # Often determined by the image tag, but can be set
     restart: unless-stopped
 ```
 
@@ -220,7 +220,7 @@ services:
 
   glpi:
     # Check Docker Hub for the latest stable tag: https://hub.docker.com/r/triatk/glpi-standalone/tags
-    image: triatk/glpi-standalone:11.0.1 # Use a specific version tag
+    image: triatk/glpi-standalone:11.0.2 # Use a specific version tag
     container_name: glpi-app-prod
     hostname: glpi
     depends_on:
@@ -237,7 +237,7 @@ services:
     environment:
       - TIMEZONE=Europe/Brussels # e.g., Europe/Paris, America/New_York
       # - GLPI_ALIAS=glpi  # Uncomment to deploy GLPI in a subfolder (e.g., /glpi)
-      # - VERSION_GLPI=11.0.1 # Usually set by the image tag, confirm if needed
+      # - VERSION_GLPI=11.0.2 # Usually set by the image tag, confirm if needed
       # - VERSION_PHP=8.3 # If the image supports multiple PHP versions via env var
       - INSTALL_PLUGINS=false # Set to true if you mount a plugins folder and want them installed
       - OPCACHE_SIZE=128
@@ -289,7 +289,7 @@ If set to `true`, the container will attempt to install/enable plugins found in 
 Specifies the GLPI version to install/ensure, if the image supports dynamic version fetching (less common with pre-built standalone images). It's often tied to the image tag.
 
 - Example: `VERSION_GLPI=10.0.18`
-- **Note:** Prefer using a specific image tag like `triatk/glpi-standalone:11.0.1`.
+- **Note:** Prefer using a specific image tag like `triatk/glpi-standalone:11.0.2`.
 
 ## VERSION_PHP
 
