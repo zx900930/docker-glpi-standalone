@@ -36,39 +36,62 @@ jobs:
       - name: Get current version from Dockerfile
         id: current_version_dockerfile
         run: |
-          CURRENT_VERSION_IN_FILE=$(grep 'ENV VERSION_GLPI=' Dockerfile | cut -d'"' -f2)
-          echo "Current version in Dockerfile: $CURRENT_VERSION_IN_FILE"
+          # Try to extract version using loose regex (handles quotes, spaces, etc)
+          CURRENT_VERSION_IN_FILE=$(sed -nE 's/.*VERSION_GLPI[ ="\t]+([0-9]+\.[0-9]+\.[0-9]+).*/\1/p' Dockerfile | head -n 1)
+          
           if [ -z "$CURRENT_VERSION_IN_FILE" ]; then
-            echo "Error: Could not extract current version from Dockerfile."
-            exit 1
+            echo "Warning: Could not extract current version from Dockerfile."
+            echo "Setting current version to 'null'."
+            echo "version=null" >> $GITHUB_OUTPUT
+          else
+            echo "Current version in Dockerfile: $CURRENT_VERSION_IN_FILE"
+            echo "version=$CURRENT_VERSION_IN_FILE" >> $GITHUB_OUTPUT
           fi
-          echo "version=$CURRENT_VERSION_IN_FILE" >> $GITHUB_OUTPUT
 
       - name: Get latest GLPI release version
         id: latest_glpi_release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Requires 'jq' to be available on the runner (default for ubuntu-latest)
-          NEW_GLPI_VERSION=$(curl -sL https://api.github.com/repos/glpi-project/glpi/releases/latest | jq -r .tag_name)
-          echo "Latest GLPI version from upstream (glpi-project/glpi): $NEW_GLPI_VERSION"
-          if [ -z "$NEW_GLPI_VERSION" ]; then
-            echo "Error: Could not fetch latest GLPI release version from upstream."
+          # Fetch releases, filter drafts/prereleases, sort by version, take top one
+          NEW_GLPI_VERSION=$(curl -sL \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer $GITHUB_TOKEN" \
+            "https://api.github.com/repos/glpi-project/glpi/releases" \
+            | jq -r '.[] | select(.prerelease==false and .draft==false) | .tag_name' \
+            | sort -V \
+            | tail -n 1)
+
+          echo "Latest GLPI version from upstream: $NEW_GLPI_VERSION"
+
+          # REQUIREMENT: If API returns null/empty, stop the workflow immediately.
+          if [ -z "$NEW_GLPI_VERSION" ] || [ "$NEW_GLPI_VERSION" == "null" ]; then
+            echo "Error: Could not fetch valid version from upstream. Aborting."
             exit 1
           fi
+          
           echo "version=$NEW_GLPI_VERSION" >> $GITHUB_OUTPUT
 
-      - name: Compare versions and proceed if new version is available
+      - name: Compare versions
         id: version_check
         run: |
           CURRENT_VER="${{ steps.current_version_dockerfile.outputs.version }}"
           LATEST_UPSTREAM_VER="${{ steps.latest_glpi_release.outputs.version }}"
 
-          echo "Comparing Current in Dockerfile: $CURRENT_VER with Latest Upstream GLPI: $LATEST_UPSTREAM_VER"
+          echo "Comparing Current: $CURRENT_VER vs Upstream: $LATEST_UPSTREAM_VER"
+
+          # REQUIREMENT: If current is null, force update
+          if [ "$CURRENT_VER" == "null" ]; then
+            echo "Current version is unknown/null. Forcing update to $LATEST_UPSTREAM_VER."
+            echo "update_needed=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
 
           if dpkg --compare-versions "$LATEST_UPSTREAM_VER" gt "$CURRENT_VER"; then
-            echo "New GLPI version available: $LATEST_UPSTREAM_VER"
+            echo "New GLPI version available."
             echo "update_needed=true" >> $GITHUB_OUTPUT
           else
-            echo "Current version $CURRENT_VER is up-to-date or newer than upstream $LATEST_UPSTREAM_VER. No update needed."
+            echo "Current version is up-to-date."
             echo "update_needed=false" >> $GITHUB_OUTPUT
           fi
 
