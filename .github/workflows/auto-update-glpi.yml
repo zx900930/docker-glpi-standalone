@@ -98,21 +98,31 @@ jobs:
       - name: Update files if new version is available
         if: steps.version_check.outputs.update_needed == 'true'
         run: |
-          CURRENT_VER_IN_FILES="${{ steps.current_version_dockerfile.outputs.version }}"
-          NEW_UPSTREAM_GLPI_VER="${{ steps.latest_glpi_release.outputs.version }}"
+          NEW_VER="${{ steps.latest_glpi_release.outputs.version }}"
+          echo "Forcing update to version: $NEW_VER"
 
-          echo "Updating files from $CURRENT_VER_IN_FILES to $NEW_UPSTREAM_GLPI_VER..."
-
-          # Update all necessary files: Dockerfile, docker-compose.yml, glpi-start.sh, README.md, README_FR.md
           # 1. Update Dockerfile
-          sed -i "s/ENV VERSION_GLPI=\"${CURRENT_VER_IN_FILES}\"/ENV VERSION_GLPI=\"${NEW_UPSTREAM_GLPI_VER}\"/" Dockerfile
+          # Match "ENV VERSION_GLPI" followed by ANYTHING (.*) and replace the whole line.
+          sed -i "s/^ENV VERSION_GLPI.*/ENV VERSION_GLPI=\"${NEW_VER}\"/" Dockerfile
+
           # 2. Update docker-compose.yml
-          sed -i "s|image: triatk/glpi-standalone:${CURRENT_VER_IN_FILES}|image: triatk/glpi-standalone:${NEW_UPSTREAM_GLPI_VER}|g" docker-compose.yml
-          sed -i "s/- VERSION_GLPI=${CURRENT_VER_IN_FILES}/- VERSION_GLPI=${NEW_UPSTREAM_GLPI_VER}/g" docker-compose.yml
+          # Fix the image tag (matches anything after colon until end of line or quote)
+          sed -i "s|image: triatk/glpi-standalone:.*|image: triatk/glpi-standalone:${NEW_VER}|g" docker-compose.yml
+          # Fix the environment variable definition
+          sed -i "s|- VERSION_GLPI=.*|- VERSION_GLPI=${NEW_VER}|g" docker-compose.yml
+
           # 3. Update glpi-start.sh
-          sed -i "s/:=${CURRENT_VER_IN_FILES}}/:=${NEW_UPSTREAM_GLPI_VER}}/" glpi-start.sh
-          # 4 & 5. Update README files (simplified for brevity, assumes original sed commands work)
-          sed -i "s|${CURRENT_VER_IN_FILES}|${NEW_UPSTREAM_GLPI_VER}|g" README.md README_FR.md || true 
+          # Matches ":=" followed by anything until "}" and replaces it
+          sed -i "s/:=.*}/:=${NEW_VER}}/" glpi-start.sh
+
+          # 4. Update READMEs
+          # Since the old version is "null", simple replace won't work well.
+          # We'll skip this or use a specific regex if standardizing README format, 
+          # but usually, this is less critical than the build failure.
+          CURRENT_VER="${{ steps.current_version_dockerfile.outputs.version }}"
+          if [ "$CURRENT_VER" != "null" ]; then
+             sed -i "s|${CURRENT_VER}|${NEW_VER}|g" README.md README_FR.md || true
+          fi
 
       - name: Commit and push changes
         if: steps.version_check.outputs.update_needed == 'true'
