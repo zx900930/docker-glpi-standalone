@@ -5,7 +5,13 @@ on:
     # Runs at 03:00 UTC every Monday
     - cron: "0 3 * * 1"
   workflow_dispatch: # Allows manual triggering
-  # Also keep the push/tag triggers from Workflow 2 to allow manual/external triggers to build the image independently
+    inputs:
+      force_rebuild:
+        description: 'Force Docker Image Rebuild (even if version matches)'
+        required: false
+        default: false
+        type: boolean
+  # Keep push/tag triggers for manual/external triggers
   push:
     branches:
       - 'main'
@@ -20,9 +26,8 @@ permissions:
   contents: write # To commit changes, create tags, and create releases
 
 jobs:
-  check-update-commit: # Merged and renamed from 'Auto Update GLPI Version'
+  check-update-commit:
     runs-on: ubuntu-latest
-    # Export outputs for the downstream 'docker' job to use
     outputs:
       update_needed: ${{ steps.version_check.outputs.update_needed }}
       new_version: ${{ steps.latest_glpi_release.outputs.version }}
@@ -31,17 +36,16 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Fetch all history for proper tag operations
+          fetch-depth: 0
 
       - name: Get current version from Dockerfile
         id: current_version_dockerfile
         run: |
-          # Try to extract version using loose regex (handles quotes, spaces, etc)
+          # Extract version (handles quotes, spaces, or malformed lines)
           CURRENT_VERSION_IN_FILE=$(sed -nE 's/.*VERSION_GLPI[ ="\t]+([0-9]+\.[0-9]+\.[0-9]+).*/\1/p' Dockerfile | head -n 1)
           
           if [ -z "$CURRENT_VERSION_IN_FILE" ]; then
             echo "Warning: Could not extract current version from Dockerfile."
-            echo "Setting current version to 'null'."
             echo "version=null" >> $GITHUB_OUTPUT
           else
             echo "Current version in Dockerfile: $CURRENT_VERSION_IN_FILE"
@@ -53,7 +57,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Fetch releases, filter drafts/prereleases, sort by version, take top one
+          # Fetch releases, filter, sort by version, take top one
           NEW_GLPI_VERSION=$(curl -sL \
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer $GITHUB_TOKEN" \
@@ -64,7 +68,6 @@ jobs:
 
           echo "Latest GLPI version from upstream: $NEW_GLPI_VERSION"
 
-          # REQUIREMENT: If API returns null/empty, stop the workflow immediately.
           if [ -z "$NEW_GLPI_VERSION" ] || [ "$NEW_GLPI_VERSION" == "null" ]; then
             echo "Error: Could not fetch valid version from upstream. Aborting."
             exit 1
@@ -80,9 +83,9 @@ jobs:
 
           echo "Comparing Current: $CURRENT_VER vs Upstream: $LATEST_UPSTREAM_VER"
 
-          # REQUIREMENT: If current is null, force update
+          # If current is null, we MUST update to fix the build
           if [ "$CURRENT_VER" == "null" ]; then
-            echo "Current version is unknown/null. Forcing update to $LATEST_UPSTREAM_VER."
+            echo "Current version is unknown/null. Forcing update."
             echo "update_needed=true" >> $GITHUB_OUTPUT
             exit 0
           fi
@@ -101,24 +104,12 @@ jobs:
           NEW_VER="${{ steps.latest_glpi_release.outputs.version }}"
           echo "Forcing update to version: $NEW_VER"
 
-          # 1. Update Dockerfile
-          # Match "ENV VERSION_GLPI" followed by ANYTHING (.*) and replace the whole line.
+          # Aggressive replacements (fix "null" or mismatching formats)
           sed -i "s/^ENV VERSION_GLPI.*/ENV VERSION_GLPI=\"${NEW_VER}\"/" Dockerfile
-
-          # 2. Update docker-compose.yml
-          # Fix the image tag (matches anything after colon until end of line or quote)
           sed -i "s|image: triatk/glpi-standalone:.*|image: triatk/glpi-standalone:${NEW_VER}|g" docker-compose.yml
-          # Fix the environment variable definition
           sed -i "s|- VERSION_GLPI=.*|- VERSION_GLPI=${NEW_VER}|g" docker-compose.yml
-
-          # 3. Update glpi-start.sh
-          # Matches ":=" followed by anything until "}" and replaces it
           sed -i "s/:=.*}/:=${NEW_VER}}/" glpi-start.sh
 
-          # 4. Update READMEs
-          # Since the old version is "null", simple replace won't work well.
-          # We'll skip this or use a specific regex if standardizing README format, 
-          # but usually, this is less critical than the build failure.
           CURRENT_VER="${{ steps.current_version_dockerfile.outputs.version }}"
           if [ "$CURRENT_VER" != "null" ]; then
              sed -i "s|${CURRENT_VER}|${NEW_VER}|g" README.md README_FR.md || true
@@ -127,28 +118,29 @@ jobs:
       - name: Commit and push changes
         if: steps.version_check.outputs.update_needed == 'true'
         run: |
-          NEW_UPSTREAM_GLPI_VER="${{ steps.latest_glpi_release.outputs.version }}"
+          NEW_VER="${{ steps.latest_glpi_release.outputs.version }}"
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           
-          # Check for changes before committing
           if git diff --exit-code; then
-              echo "No changes detected after version bump. Skipping commit."
+              echo "No changes detected. Skipping commit."
           else
               git add Dockerfile docker-compose.yml glpi-start.sh README.md README_FR.md
-              git commit -m "Bump GLPI to ${NEW_UPSTREAM_GLPI_VER} (Automated)"
-              BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
-              git push origin "$BRANCH_NAME"
-              echo "Changes pushed to branch $BRANCH_NAME."
+              git commit -m "Bump GLPI to ${NEW_VER} (Automated)"
+              git push origin HEAD
           fi
 
       - name: Create Git tag
         if: steps.version_check.outputs.update_needed == 'true'
         run: |
-          NEW_REPO_TAG_NAME="${{ steps.latest_glpi_release.outputs.version }}"
-          git tag "$NEW_REPO_TAG_NAME" -m "Release GLPI Standalone based on GLPI ${NEW_REPO_TAG_NAME}"
-          git push origin "$NEW_REPO_TAG_NAME"
-          echo "Tag $NEW_REPO_TAG_NAME pushed."
+          NEW_VER="${{ steps.latest_glpi_release.outputs.version }}"
+          # Only tag if tag doesn't exist
+          if git rev-parse "$NEW_VER" >/dev/null 2>&1; then
+             echo "Tag $NEW_VER already exists. Skipping."
+          else
+             git tag "$NEW_VER" -m "Release GLPI Standalone ${NEW_VER}"
+             git push origin "$NEW_VER"
+          fi
 
       - name: Create GitHub Release
         if: steps.version_check.outputs.update_needed == 'true'
@@ -156,34 +148,28 @@ jobs:
         with:
           tag_name: ${{ steps.latest_glpi_release.outputs.version }}
           name: GLPI Standalone ${{ steps.latest_glpi_release.outputs.version }}
-          body: |
-            Automated release for GLPI Standalone.
-            This image incorporates GLPI version ${{ steps.latest_glpi_release.outputs.version }}.
-
-            Upstream GLPI release notes: https://github.com/glpi-project/glpi/releases/tag/${{ steps.latest_glpi_release.outputs.version }}
+          body: "Automated release. Upstream: https://github.com/glpi-project/glpi/releases/tag/${{ steps.latest_glpi_release.outputs.version }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: No update performed
-        if: steps.version_check.outputs.update_needed == 'false'
-        run: echo "No update was performed as the current version is up-to-date or newer."
-
-  docker: # Original Workflow 2 job, now dependent on the update
+  docker:
     runs-on: ubuntu-latest
-    needs: check-update-commit # Ensure this job runs after the version check
-
-    # The Docker build job will run in two cases:
-    # 1. If the 'check-update-commit' job found a new version and pushed changes/tag.
-    # 2. If the workflow was manually triggered by push/tag (github.event_name is 'push' or 'create' which is tag push).
+    needs: check-update-commit
+    
+    # Run if:
+    # 1. Manual push/tag
+    # 2. Update was needed (new version found)
+    # 3. Force rebuild was selected manually
     if: |
       (github.event_name == 'push' || github.event_name == 'create') ||
-      (needs.check-update-commit.outputs.update_needed == 'true')
+      (needs.check-update-commit.outputs.update_needed == 'true') ||
+      (inputs.force_rebuild == true)
     
     steps:
-      - name: Checkout repository (to get the updated files and new tag)
+      - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Get tags for Docker meta action
+          fetch-depth: 0
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -204,9 +190,9 @@ jobs:
           flavor: |
             latest=true
           tags: |
-            # Use the new version tag directly if it was an automated update
-            type=raw,value=${{ needs.check-update-commit.outputs.new_version }},enable=${{ needs.check-update-commit.outputs.update_needed == 'true' }}
-            # Fallback to original tagging logic for push/tag triggers
+            # Use the upstream version calculated in the previous job if this is an automated update OR a forced rebuild
+            type=raw,value=${{ needs.check-update-commit.outputs.new_version }},enable=${{ needs.check-update-commit.outputs.update_needed == 'true' || inputs.force_rebuild == true }}
+            # Standard tags
             type=schedule
             type=ref,event=branch
             type=ref,event=pr
