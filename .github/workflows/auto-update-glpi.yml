@@ -191,7 +191,7 @@ jobs:
             latest=true
           tags: |
             # Use the upstream version calculated in the previous job if this is an automated update OR a forced rebuild
-            type=raw,value=${{ needs.check-update-commit.outputs.new_version }},enable=${{ needs.check-update-commit.outputs.update_needed == 'true' }}
+            type=raw,value=${{ needs.check-update-commit.outputs.new_version }}
             # Standard tags
             type=schedule
             type=ref,event=branch
